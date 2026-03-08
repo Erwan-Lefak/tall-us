@@ -1,0 +1,17 @@
+{
+  "name": "tall-us-setup-scripts",
+  "version": "1.0.0",
+  "description": "Setup scripts for Tall Us Appwrite backend",
+  "private": true,
+  "scripts": {
+    "setup": "node setup-appwrite.js",
+    "setup:dev": "NODE_ENV=development node setup-appwrite.js",
+    "setup:prod": "NODE_ENV=production node setup-appwrite.js"
+  },
+  "dependencies": {
+    "node-appwrite": "^14.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
