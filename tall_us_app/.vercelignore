@@ -1,0 +1,32 @@
+# Flutter build files
+.dart_tool/
+.packages
+.pub-cache/
+.dart_tool/
+build/
+.flutter-plugins
+.flutter-plugins-dependencies
+.dart_tool/
+.packages
+.pub-cache/
+.dart_tool/
+
+# Dependencies
+pubspec.lock
+pubspec.overrides
+
+# IDE
+.idea/
+.vscode/
+*.iml
+*.swp
+*.swo
+.DS_Store
+
+# Logs
+*.log
+logs/
+
+# OS
+.DS_Store
+Thumbs.db
