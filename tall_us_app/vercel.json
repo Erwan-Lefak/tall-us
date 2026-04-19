@@ -1,9 +1,9 @@
 {
   "buildCommand": "flutter build web --release",
-  "outputDirectory": "build/web",
-  "framework": null,
+  "devCommand": null,
   "installCommand": "flutter pub get",
-  "devCommand": "flutter run -d web-server --web-port $PORT",
+  "framework": null,
+  "outputDirectory": "build/web",
   "routes": [
     {
       "src": "/",
