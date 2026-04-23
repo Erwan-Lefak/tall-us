@@ -44,17 +44,21 @@ class UserProfileModel {
       displayName: json['display_name'] ?? json['displayName'] ?? '',
       bio: json['bio'],
       gender: json['gender'] ?? '',
-      sexualOrientation: json['sexual_orientation'] ?? json['sexualOrientation'],
+      sexualOrientation:
+          json['sexual_orientation'] ?? json['sexualOrientation'],
       heightCm: json['height_cm'] ?? json['heightCm'] ?? 0,
       birthday: json['birthday'] ?? '',
       city: json['city'] ?? '',
       country: json['country'] ?? '',
       photoUrls: json['photo_urls'] != null
           ? List<String>.from(json['photo_urls'])
-          : (json['photoUrls'] != null ? List<String>.from(json['photoUrls']) : []),
+          : (json['photoUrls'] != null
+              ? List<String>.from(json['photoUrls'])
+              : []),
       promptAnswer: json['prompt_answer'] ?? json['promptAnswer'],
       promptId: json['prompt_id'] ?? json['promptId'],
-      heightVerified: json['height_verified'] ?? json['heightVerified'] ?? false,
+      heightVerified:
+          json['height_verified'] ?? json['heightVerified'] ?? false,
       age: json['age'],
     );
   }
@@ -93,8 +97,8 @@ class UserProfileModel {
       city: city,
       country: country,
       photoUrls: photoUrls,
-      promptAnswer: promptAnswer,
-      promptId: promptId,
+      // TODO: Convert prompts from JSON when stored in DB
+      prompts: const [],
       heightVerified: heightVerified,
       age: age,
     );
@@ -114,8 +118,7 @@ class UserProfileModel {
       city: entity.city,
       country: entity.country,
       photoUrls: entity.photoUrls,
-      promptAnswer: entity.promptAnswer,
-      promptId: entity.promptId,
+      // TODO: Serialize prompts to JSON when storing in DB
       heightVerified: entity.heightVerified,
       age: entity.age,
     );

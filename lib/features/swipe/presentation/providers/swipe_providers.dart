@@ -117,7 +117,8 @@ class SwipeStateError extends SwipeState {
 }
 
 /// Provider for SwipeNotifier
-final swipeNotifierProvider = StateNotifierProvider<SwipeNotifier, SwipeState>((ref) {
+final swipeNotifierProvider =
+    StateNotifierProvider<SwipeNotifier, SwipeState>((ref) {
   final repository = ref.read(swipeRepositoryProvider);
   return SwipeNotifier(repository);
 });

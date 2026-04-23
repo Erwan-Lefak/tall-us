@@ -46,22 +46,18 @@ class AppTheme {
         onPrimary: white,
         primaryContainer: const Color(0xFFE8D2D4),
         onPrimaryContainer: bordeaux,
-
         secondary: navy,
         onSecondary: white,
         secondaryContainer: const Color(0xFFE8EAF0),
         onSecondaryContainer: navy,
-
         tertiary: gold,
         onTertiary: navy,
         tertiaryContainer: const Color(0xFFF5EFD8),
         onTertiaryContainer: const Color(0xFF5C5A35),
-
         surface: offWhite,
         onSurface: navy,
         surfaceContainerHighest: gray100,
         onSurfaceVariant: gray700,
-
         error: error,
         onError: white,
       ),
@@ -77,7 +73,6 @@ class AppTheme {
           color: white,
           fontSize: 20,
           fontWeight: FontWeight.w600,
-          
         ),
       ),
 
@@ -220,19 +215,16 @@ class AppTheme {
         displayLarge: TextStyle(
           fontSize: 57,
           fontWeight: FontWeight.w400,
-          
           color: navy,
         ),
         displayMedium: TextStyle(
           fontSize: 45,
           fontWeight: FontWeight.w400,
-          
           color: navy,
         ),
         displaySmall: TextStyle(
           fontSize: 36,
           fontWeight: FontWeight.w400,
-          
           color: navy,
         ),
 
@@ -240,19 +232,16 @@ class AppTheme {
         headlineLarge: TextStyle(
           fontSize: 32,
           fontWeight: FontWeight.w600,
-          
           color: navy,
         ),
         headlineMedium: TextStyle(
           fontSize: 28,
           fontWeight: FontWeight.w600,
-          
           color: navy,
         ),
         headlineSmall: TextStyle(
           fontSize: 24,
           fontWeight: FontWeight.w600,
-          
           color: navy,
         ),
 
@@ -260,19 +249,16 @@ class AppTheme {
         titleLarge: TextStyle(
           fontSize: 22,
           fontWeight: FontWeight.w600,
-          
           color: navy,
         ),
         titleMedium: TextStyle(
           fontSize: 16,
           fontWeight: FontWeight.w500,
-          
           color: navy,
         ),
         titleSmall: TextStyle(
           fontSize: 14,
           fontWeight: FontWeight.w500,
-          
           color: navy,
         ),
 
@@ -280,19 +266,16 @@ class AppTheme {
         bodyLarge: TextStyle(
           fontSize: 16,
           fontWeight: FontWeight.w400,
-          
           color: navy,
         ),
         bodyMedium: TextStyle(
           fontSize: 14,
           fontWeight: FontWeight.w400,
-          
           color: navy,
         ),
         bodySmall: TextStyle(
           fontSize: 12,
           fontWeight: FontWeight.w400,
-          
           color: gray700,
         ),
 
@@ -300,19 +283,16 @@ class AppTheme {
         labelLarge: TextStyle(
           fontSize: 14,
           fontWeight: FontWeight.w500,
-          
           color: navy,
         ),
         labelMedium: TextStyle(
           fontSize: 12,
           fontWeight: FontWeight.w500,
-          
           color: gray700,
         ),
         labelSmall: TextStyle(
           fontSize: 11,
           fontWeight: FontWeight.w500,
-          
           color: gray600,
         ),
       ),
@@ -324,28 +304,23 @@ class AppTheme {
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.dark,
-
       colorScheme: ColorScheme.dark(
         primary: const Color(0xFFFF8A93),
         onPrimary: navy,
         primaryContainer: const Color(0xFF5C1B23),
         onPrimaryContainer: const Color(0xFFFFDAD9),
-
         secondary: const Color(0xFFBFC6DC),
         onSecondary: navy,
         secondaryContainer: const Color(0xFF3A4159),
         onSecondaryContainer: const Color(0xFFE1E6F9),
-
         tertiary: const Color(0xFFDEC56A),
         onTertiary: navy,
         tertiaryContainer: const Color(0xFF47452F),
         onTertiaryContainer: const Color(0xFFFCEFC3),
-
         surface: const Color(0xFF12161F),
         onSurface: const Color(0xFFE1E6F9),
         surfaceContainerHighest: const Color(0xFF1A2332),
         onSurfaceVariant: const Color(0xFFBFC6DC),
-
         error: const Color(0xFFFFB4AB),
         onError: const Color(0xFF690005),
       ),
@@ -358,63 +333,54 @@ class AppTextStyles {
   static const TextStyle h1 = TextStyle(
     fontSize: 32,
     fontWeight: FontWeight.w600,
-    
     color: AppTheme.navy,
   );
 
   static const TextStyle h2 = TextStyle(
     fontSize: 28,
     fontWeight: FontWeight.w600,
-    
     color: AppTheme.navy,
   );
 
   static const TextStyle h3 = TextStyle(
     fontSize: 24,
     fontWeight: FontWeight.w600,
-    
     color: AppTheme.navy,
   );
 
   static const TextStyle bodyLarge = TextStyle(
     fontSize: 16,
     fontWeight: FontWeight.w400,
-    
     color: AppTheme.navy,
   );
 
   static const TextStyle bodyMedium = TextStyle(
     fontSize: 14,
     fontWeight: FontWeight.w400,
-    
     color: AppTheme.navy,
   );
 
   static const TextStyle bodySmall = TextStyle(
     fontSize: 12,
     fontWeight: FontWeight.w400,
-    
     color: AppTheme.gray700,
   );
 
   static const TextStyle caption = TextStyle(
     fontSize: 11,
     fontWeight: FontWeight.w400,
-    
     color: AppTheme.gray600,
   );
 
   static const TextStyle button = TextStyle(
     fontSize: 16,
     fontWeight: FontWeight.w600,
-    
     letterSpacing: 0.5,
   );
 
   static const TextStyle overline = TextStyle(
     fontSize: 12,
     fontWeight: FontWeight.w500,
-    
     letterSpacing: 1.5,
     color: AppTheme.gray600,
   );

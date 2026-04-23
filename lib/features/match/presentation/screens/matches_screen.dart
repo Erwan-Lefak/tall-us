@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:tall_us/core/theme/app_theme.dart';
+import 'package:tall_us/core/widgets/skeleton/skeleton_loading.dart';
 import 'package:tall_us/features/message/presentation/screens/chat_screen.dart';
 
 /// Matches list screen
@@ -38,7 +39,8 @@ class _MatchesScreenState extends ConsumerState<MatchesScreen> {
           'age': 26,
           'photo': 'https://via.placeholder.com/150',
           'lastMessage': 'Salut ! Ça va ?',
-          'lastMessageTime': DateTime.now().subtract(const Duration(minutes: 5)),
+          'lastMessageTime':
+              DateTime.now().subtract(const Duration(minutes: 5)),
           'unreadCount': 2,
         },
         {
@@ -92,9 +94,7 @@ class _MatchesScreenState extends ConsumerState<MatchesScreen> {
         ),
         child: _isLoading
             ? const Center(
-                child: CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(AppTheme.bordeaux),
-                ),
+                child: MessageLineSkeleton(),
               )
             : _matches.isEmpty
                 ? _buildEmptyState()

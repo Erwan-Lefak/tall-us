@@ -53,3 +53,7 @@ app.*.map.json
 # Node modules (for setup scripts)
 /scripts/node_modules/
 /scripts/package-lock.json
+.vercel
+
+# Local Netlify folder
+.netlify

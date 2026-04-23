@@ -44,8 +44,8 @@ void main() async {
   // Initialize logger
   AppLogger.init(verbose: true);
 
-  // Initialize Firebase
-  await _initializeFirebase();
+  // Initialize Firebase (commented until Firebase is configured)
+  // await _initializeFirebase();
 
   runApp(const ProviderScope(child: TallUsApp()));
 }
@@ -68,13 +68,19 @@ class TallUsApp extends ConsumerWidget {
       themeMode: ThemeMode.light,
       routerConfig: router,
       builder: (context, child) {
-        return Stack(
-          children: [
-            child!,
-            // Notification permission banner overlay
-            const Positioned(top: 0, left: 0, right: 0, child: NotificationWidget()),
-          ],
-        );
+        // Stack with proper pointer handling for web
+        // Notification permission banner overlay (disabled for now)
+        // Uncomment below to re-enable notifications with proper pointer handling
+        // return Stack(
+        //   children: [
+        //     child!,
+        //     // Positioned widget with proper sizing to prevent blocking
+        //     const Positioned(top: 0, left: 0, right: 0, child: NotificationWidget()),
+        //   ],
+        // );
+
+        // Direct child return for now (fixes web pointer events)
+        return child!;
       },
     );
   }

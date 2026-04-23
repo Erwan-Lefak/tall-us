@@ -9,7 +9,8 @@ import 'package:tall_us/features/discovery/presentation/providers/discovery_noti
 import 'package:tall_us/features/discovery/presentation/providers/discovery_state.dart';
 
 /// Provider for DiscoveryRemoteDataSource
-final discoveryRemoteDataSourceProvider = Provider<DiscoveryRemoteDataSource>((ref) {
+final discoveryRemoteDataSourceProvider =
+    Provider<DiscoveryRemoteDataSource>((ref) {
   final databases = Databases(ref.read(appwriteClientProvider));
   return DiscoveryRemoteDataSource(databases);
 });
@@ -21,13 +22,15 @@ final discoveryRepositoryProvider = Provider<DiscoveryRepository>((ref) {
 });
 
 /// Provider for GetProfilesToDiscoverUseCase
-final getProfilesToDiscoverUseCaseProvider = Provider<GetProfilesToDiscoverUseCase>((ref) {
+final getProfilesToDiscoverUseCaseProvider =
+    Provider<GetProfilesToDiscoverUseCase>((ref) {
   final repository = ref.read(discoveryRepositoryProvider);
   return GetProfilesToDiscoverUseCase(repository);
 });
 
 /// Provider for DiscoveryNotifier
-final discoveryNotifierProvider = StateNotifierProvider<DiscoveryNotifier, DiscoveryState>((ref) {
+final discoveryNotifierProvider =
+    StateNotifierProvider<DiscoveryNotifier, DiscoveryState>((ref) {
   final getProfilesUseCase = ref.read(getProfilesToDiscoverUseCaseProvider);
   return DiscoveryNotifier(getProfilesUseCase);
 });

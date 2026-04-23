@@ -171,7 +171,8 @@ class PushNotificationPayload {
   }) {
     return PushNotificationPayload(
       title: 'Your Weekly Summary 📊',
-      body: 'You had $newMatches new matches and $newMessages messages this week!',
+      body:
+          'You had $newMatches new matches and $newMessages messages this week!',
       type: NotificationType.weeklyDigest,
       data: {
         'newMatches': newMatches.toString(),

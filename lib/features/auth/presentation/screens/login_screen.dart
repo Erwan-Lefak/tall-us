@@ -288,13 +288,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     Align(
                       alignment: Alignment.centerRight,
                       child: TextButton(
-                        onPressed: _isLoading ? null : _navigateToForgotPassword,
+                        onPressed:
+                            _isLoading ? null : _navigateToForgotPassword,
                         child: Text(
                           'Mot de passe oublié ?',
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                color: AppTheme.bordeaux,
-                                fontWeight: FontWeight.w600,
-                              ),
+                          style:
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    color: AppTheme.bordeaux,
+                                    fontWeight: FontWeight.w600,
+                                  ),
                         ),
                       ),
                     ),
@@ -310,7 +312,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppTheme.bordeaux,
                           foregroundColor: Colors.white,
-                          disabledBackgroundColor: AppTheme.bordeaux.withValues(alpha: 0.6),
+                          disabledBackgroundColor:
+                              AppTheme.bordeaux.withValues(alpha: 0.6),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),

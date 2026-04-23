@@ -12,7 +12,8 @@ class GetMatchesUseCase {
     return await repository.getMatches(userId);
   }
 
-  Future<Either<Failure, List<MatchEntity>>> getUnreadMatches(String userId) async {
+  Future<Either<Failure, List<MatchEntity>>> getUnreadMatches(
+      String userId) async {
     return await repository.getUnreadMatches(userId);
   }
 }

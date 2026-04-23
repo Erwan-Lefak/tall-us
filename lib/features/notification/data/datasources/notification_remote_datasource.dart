@@ -23,7 +23,8 @@ class NotificationRemoteDatasource {
   })  : _database = database,
         _fcmServerKey = fcmServerKey,
         _courierAuthToken = courierAuthToken,
-        _localNotifications = localNotifications ?? FlutterLocalNotificationsPlugin();
+        _localNotifications =
+            localNotifications ?? FlutterLocalNotificationsPlugin();
 
   /// Initialize Android notification channels
   Future<void> initializeChannels() async {
@@ -37,7 +38,8 @@ class NotificationRemoteDatasource {
       );
 
       await _localNotifications
-          .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
+          .resolvePlatformSpecificImplementation<
+              AndroidFlutterLocalNotificationsPlugin>()
           ?.createNotificationChannel(channel);
 
       AppLogger.i('Android notification channel created');
@@ -50,7 +52,8 @@ class NotificationRemoteDatasource {
     required Map<String, dynamic> payload,
   }) async {
     try {
-      AppLogger.i('Sending FCM notification to token: ${deviceToken.substring(0, 10)}...');
+      AppLogger.i(
+          'Sending FCM notification to token: ${deviceToken.substring(0, 10)}...');
 
       final response = await http.post(
         Uri.parse('https://fcm.googleapis.com/fcm/send'),
@@ -65,8 +68,10 @@ class NotificationRemoteDatasource {
         AppLogger.i('FCM notification sent successfully');
         return const Right(null);
       } else {
-        AppLogger.e('FCM notification failed: ${response.statusCode} - ${response.body}');
-        return Left(Exception('FCM notification failed: ${response.statusCode}'));
+        AppLogger.e(
+            'FCM notification failed: ${response.statusCode} - ${response.body}');
+        return Left(
+            Exception('FCM notification failed: ${response.statusCode}'));
       }
     } catch (e) {
       AppLogger.e('Error sending FCM notification', error: e);
@@ -181,7 +186,8 @@ class NotificationRemoteDatasource {
   }
 
   /// Get user's FCM device tokens
-  Future<Either<Object, List<String>>> getUserDeviceTokens(String userId) async {
+  Future<Either<Object, List<String>>> getUserDeviceTokens(
+      String userId) async {
     try {
       // In production, store device tokens in a collection
       // For now, return empty list (tokens are managed client-side)
@@ -200,7 +206,8 @@ class NotificationRemoteDatasource {
   }) async {
     try {
       final response = await http.post(
-        Uri.parse('https://iid.googleapis.com/iid/v1/$deviceToken/rel/topics/$topic'),
+        Uri.parse(
+            'https://iid.googleapis.com/iid/v1/$deviceToken/rel/topics/$topic'),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'key=$_fcmServerKey',

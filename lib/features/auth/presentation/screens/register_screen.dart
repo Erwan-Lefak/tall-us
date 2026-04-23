@@ -66,7 +66,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     if (!_acceptTerms) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('Veuillez accepter les conditions d\'utilisation'),
+          content:
+              const Text('Veuillez accepter les conditions d\'utilisation'),
           backgroundColor: AppTheme.bordeaux,
           behavior: SnackBarBehavior.floating,
           margin: const EdgeInsets.all(16),
@@ -431,7 +432,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                         ? AppConstants.minHeightMale
                         : AppConstants.minHeightFemale;
                     if (height < minHeight) {
-                      final genderText = _selectedGender == 'male' ? 'hommes' : 'femmes';
+                      final genderText =
+                          _selectedGender == 'male' ? 'hommes' : 'femmes';
                       return 'La taille minimum pour les $genderText est de $minHeight cm';
                     }
                     if (height > 250) {
@@ -584,9 +586,10 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                               },
                         child: Text(
                           'J\'accepte les conditions d\'utilisation et la politique de confidentialité',
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                color: AppTheme.navy.withValues(alpha: 0.7),
-                              ),
+                          style:
+                              Theme.of(context).textTheme.bodySmall?.copyWith(
+                                    color: AppTheme.navy.withValues(alpha: 0.7),
+                                  ),
                         ),
                       ),
                     ),
@@ -644,9 +647,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                           ),
                     ),
                     TextButton(
-                      onPressed: _isLoading
-                          ? null
-                          : () => context.go('/login'),
+                      onPressed: _isLoading ? null : () => context.go('/login'),
                       child: Text(
                         'Se connecter',
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(

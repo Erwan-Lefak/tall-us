@@ -86,7 +86,8 @@ class DiscoveryNotifier extends StateNotifier<DiscoveryState> {
     // For now, simulate swipe
     await Future.delayed(const Duration(milliseconds: 300));
 
-    final match = action == 'like' ? null : null; // Will be populated by use case
+    final match =
+        action == 'like' ? null : null; // Will be populated by use case
 
     state = state.copyWith(
       currentIndex: state.currentIndex + 1,

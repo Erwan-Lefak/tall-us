@@ -109,13 +109,15 @@ class _HeroSection extends StatelessWidget {
                           _DownloadButton(
                             icon: Icons.phone_android,
                             label: 'Get for Android',
-                            onPressed: () => _launchUrl('https://play.google.com'),
+                            onPressed: () =>
+                                _launchUrl('https://play.google.com'),
                           ),
                           const SizedBox(width: 16),
                           _DownloadButton(
                             icon: Icons.phone_iphone,
                             label: 'Get for iOS',
-                            onPressed: () => _launchUrl('https://apps.apple.com'),
+                            onPressed: () =>
+                                _launchUrl('https://apps.apple.com'),
                           ),
                         ],
                       ),

@@ -18,7 +18,8 @@ class HeightVerificationScreen extends ConsumerStatefulWidget {
       _HeightVerificationScreenState();
 }
 
-class _HeightVerificationScreenState extends ConsumerState<HeightVerificationScreen> {
+class _HeightVerificationScreenState
+    extends ConsumerState<HeightVerificationScreen> {
   File? _selectedImage;
   bool _isLoading = false;
   int? _currentHeight;
@@ -235,7 +236,8 @@ class _HeightVerificationScreenState extends ConsumerState<HeightVerificationScr
         children: [
           Row(
             children: [
-              const Icon(Icons.info_outline, color: AppTheme.bordeaux, size: 24),
+              const Icon(Icons.info_outline,
+                  color: AppTheme.bordeaux, size: 24),
               const SizedBox(width: 12),
               const Text(
                 'Comment prendre votre photo',
@@ -250,7 +252,8 @@ class _HeightVerificationScreenState extends ConsumerState<HeightVerificationScr
           const SizedBox(height: 20),
           const _InstructionStep(
             number: '1',
-            text: 'Trouvez un mur avec un cadre de porte (généralement à environ 2m de hauteur)',
+            text:
+                'Trouvez un mur avec un cadre de porte (généralement à environ 2m de hauteur)',
           ),
           const _InstructionStep(
             number: '2',
@@ -398,7 +401,8 @@ class _HeightVerificationScreenState extends ConsumerState<HeightVerificationScr
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton(
-        onPressed: _selectedImage != null && !_isLoading ? _submitVerification : null,
+        onPressed:
+            _selectedImage != null && !_isLoading ? _submitVerification : null,
         style: ElevatedButton.styleFrom(
           backgroundColor: AppTheme.bordeaux,
           foregroundColor: Colors.white,

@@ -108,7 +108,8 @@ class _SuperLikeAnimationState extends State<SuperLikeAnimation>
                                   color: AppTheme.gold,
                                   boxShadow: [
                                     BoxShadow(
-                                      color: AppTheme.gold.withValues(alpha: 0.6),
+                                      color:
+                                          AppTheme.gold.withValues(alpha: 0.6),
                                       blurRadius: 30,
                                       spreadRadius: 10,
                                     ),
@@ -140,7 +141,8 @@ class _SuperLikeAnimationState extends State<SuperLikeAnimation>
                                   borderRadius: BorderRadius.circular(32),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: Colors.black.withValues(alpha: 0.2),
+                                      color:
+                                          Colors.black.withValues(alpha: 0.2),
                                       blurRadius: 10,
                                       offset: const Offset(0, 5),
                                     ),

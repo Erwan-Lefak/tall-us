@@ -159,7 +159,8 @@ class AuthFailure extends Failure {
 
   factory AuthFailure.passwordTooWeak() {
     return const AuthFailure(
-      message: 'Password is too weak. Use at least 8 characters with uppercase, lowercase, number and special character.',
+      message:
+          'Password is too weak. Use at least 8 characters with uppercase, lowercase, number and special character.',
       code: 'PASSWORD_TOO_WEAK',
     );
   }

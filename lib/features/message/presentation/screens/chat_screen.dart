@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:tall_us/core/theme/app_theme.dart';
 import 'package:tall_us/core/utils/logger.dart';
+import 'package:tall_us/core/widgets/skeleton/skeleton_loading.dart';
 import 'package:tall_us/features/auth/presentation/providers/auth_providers.dart';
 import 'package:tall_us/features/message/domain/entities/message_entity.dart';
 import 'package:tall_us/features/message/presentation/providers/message_providers.dart';
@@ -32,8 +33,12 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     super.initState();
     // Load messages and subscribe to real-time updates
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(messageNotifierProvider(widget.matchId).notifier).loadMessages(widget.matchId);
-      ref.read(messageNotifierProvider(widget.matchId).notifier).subscribeToMessages(widget.matchId);
+      ref
+          .read(messageNotifierProvider(widget.matchId).notifier)
+          .loadMessages(widget.matchId);
+      ref
+          .read(messageNotifierProvider(widget.matchId).notifier)
+          .subscribeToMessages(widget.matchId);
     });
   }
 
@@ -58,12 +63,14 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       return;
     }
 
-    await ref.read(messageNotifierProvider(widget.matchId).notifier).sendMessage(
-      matchId: widget.matchId,
-      senderId: currentUser.id,
-      receiverId: widget.otherUserId,
-      content: content,
-    );
+    await ref
+        .read(messageNotifierProvider(widget.matchId).notifier)
+        .sendMessage(
+          matchId: widget.matchId,
+          senderId: currentUser.id,
+          receiverId: widget.otherUserId,
+          content: content,
+        );
 
     // Scroll to bottom
     _scrollToBottom();
@@ -105,9 +112,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
             Expanded(
               child: messageState.when(
                 loading: () => const Center(
-                  child: CircularProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation<Color>(AppTheme.bordeaux),
-                  ),
+                  child: MessageLineSkeleton(),
                 ),
                 loaded: (messages) => messages.isEmpty
                     ? _buildEmptyState()
@@ -143,9 +148,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                   ),
                 ),
                 initial: () => const Center(
-                  child: CircularProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation<Color>(AppTheme.bordeaux),
-                  ),
+                  child: MessageLineSkeleton(),
                 ),
               ),
             ),
@@ -189,7 +192,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     );
   }
 
-  Widget _buildMessagesList(List<MessageEntity> messages, String currentUserId) {
+  Widget _buildMessagesList(
+      List<MessageEntity> messages, String currentUserId) {
     // Scroll to bottom when new messages arrive
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _scrollToBottom();
@@ -206,7 +210,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         return Padding(
           padding: const EdgeInsets.only(bottom: 12),
           child: Row(
-            mainAxisAlignment: isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
+            mainAxisAlignment:
+                isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               if (!isMe) ...[
@@ -253,7 +258,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                 CircleAvatar(
                   radius: 16,
                   backgroundColor: AppTheme.bordeaux,
-                  child: const Icon(Icons.person, color: Colors.white, size: 20),
+                  child:
+                      const Icon(Icons.person, color: Colors.white, size: 20),
                 ),
               ],
             ],

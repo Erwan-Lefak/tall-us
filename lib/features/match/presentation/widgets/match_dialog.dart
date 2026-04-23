@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tall_us/core/theme/app_theme.dart';
+import 'package:tall_us/core/widgets/cached_network_image_widget.dart';
 import 'package:tall_us/features/profile/domain/entities/user_profile_entity.dart';
 
 /// Animated match dialog showing two profiles that matched
@@ -217,10 +218,10 @@ class _MatchDialogState extends State<MatchDialog>
       ),
       child: ClipOval(
         child: photoUrl.isNotEmpty
-            ? Image.network(
-                photoUrl,
+            ? CachedNetworkImageWidget(
+                imageUrl: photoUrl,
                 fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
+                errorWidget: (context, url, error) {
                   return Container(
                     color: Colors.grey.shade300,
                     child: Icon(
@@ -255,9 +256,8 @@ class _MatchDialogState extends State<MatchDialog>
         decoration: BoxDecoration(
           color: isSecondary ? Colors.transparent : Colors.white,
           borderRadius: BorderRadius.circular(32),
-          border: isSecondary
-              ? Border.all(color: Colors.white, width: 2)
-              : null,
+          border:
+              isSecondary ? Border.all(color: Colors.white, width: 2) : null,
           boxShadow: isSecondary
               ? null
               : [

@@ -37,60 +37,63 @@ class _NotificationWidgetState extends ConsumerState<NotificationWidget> {
   Widget _buildPermissionBanner() {
     return Material(
       elevation: 8,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              AppTheme.bordeaux,
-              AppTheme.bordeaux.withValues(alpha: 0.8),
-            ],
+      child: IgnorePointer(
+        ignoring: false, // Allow pointer events on the banner itself
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                AppTheme.bordeaux,
+                AppTheme.bordeaux.withValues(alpha: 0.8),
+              ],
+            ),
           ),
-        ),
-        child: SafeArea(
-          bottom: false,
-          child: Row(
-            children: [
-              const Icon(
-                Icons.notifications_active,
-                color: Colors.white,
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      'Enable Notifications',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      'Get notified when you match or receive messages',
-                      style: TextStyle(
-                        color: Colors.white.withValues(alpha: 0.9),
-                        fontSize: 12,
-                      ),
-                    ),
-                  ],
+          child: SafeArea(
+            bottom: false,
+            child: Row(
+              children: [
+                const Icon(
+                  Icons.notifications_active,
+                  color: Colors.white,
                 ),
-              ),
-              TextButton(
-                onPressed: () => _enableNotifications(),
-                child: const Text(
-                  'Enable',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        'Enable Notifications',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        'Get notified when you match or receive messages',
+                        style: TextStyle(
+                          color: Colors.white.withValues(alpha: 0.9),
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-              ),
-            ],
+                TextButton(
+                  onPressed: () => _enableNotifications(),
+                  child: const Text(
+                    'Enable',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -128,9 +131,7 @@ class NotificationCard extends StatelessWidget {
                 : AppTheme.bordeaux.withValues(alpha: 0.05),
             border: Border(
               left: BorderSide(
-                color: isRead
-                    ? Colors.transparent
-                    : AppTheme.bordeaux,
+                color: isRead ? Colors.transparent : AppTheme.bordeaux,
                 width: 4,
               ),
             ),
@@ -150,7 +151,8 @@ class NotificationCard extends StatelessWidget {
                       notification.title,
                       style: TextStyle(
                         fontSize: 16,
-                        fontWeight: isRead ? FontWeight.normal : FontWeight.bold,
+                        fontWeight:
+                            isRead ? FontWeight.normal : FontWeight.bold,
                         color: AppTheme.navy,
                       ),
                     ),
@@ -319,9 +321,7 @@ class _NotificationSettingsScreenState
             value: true,
             onChanged: (value) {},
           ),
-
           const Divider(height: 32),
-
           _buildSectionHeader('Notification Types'),
           _buildSwitchTile(
             title: 'New Matches',
@@ -353,9 +353,7 @@ class _NotificationSettingsScreenState
             value: true,
             onChanged: (value) {},
           ),
-
           const Divider(height: 32),
-
           _buildSectionHeader('Marketing'),
           _buildSwitchTile(
             title: 'Promotional Emails',

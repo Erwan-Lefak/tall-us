@@ -1,22 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:tall_us/core/theme/app_theme.dart';
 import 'package:tall_us/core/utils/logger.dart';
+import 'package:tall_us/core/widgets/skeleton/skeleton_loading.dart';
+import 'package:tall_us/core/widgets/interactive/premium_button.dart';
 import 'package:tall_us/features/auth/presentation/providers/auth_providers.dart';
 import 'package:tall_us/features/discovery/presentation/providers/discovery_providers.dart';
+import 'package:tall_us/features/discovery/presentation/providers/discovery_extended_providers.dart';
+import 'package:tall_us/features/discovery/presentation/screens/top_picks_screen.dart';
+import 'package:tall_us/features/discovery/presentation/screens/who_likes_you_screen.dart';
 import 'package:tall_us/features/match/domain/entities/match_entity.dart';
-import 'package:tall_us/features/match/presentation/widgets/match_dialog.dart';
+import 'package:tall_us/features/match/presentation/widgets/heart_explosion.dart';
 import 'package:tall_us/features/profile/domain/entities/user_profile_entity.dart';
 import 'package:tall_us/features/swipe/domain/entities/swipe_entity.dart';
 import 'package:tall_us/features/swipe/presentation/providers/swipe_providers.dart';
 import 'package:tall_us/features/swipe/presentation/widgets/profile_card.dart';
-import 'package:tall_us/features/swipe/presentation/widgets/super_like_animation.dart';
+import 'package:tall_us/features/swipe/presentation/widgets/premium_swipeable_card.dart';
 
 /// Discovery/Swipe screen with real Appwrite data
 class DiscoveryScreen extends ConsumerWidget {
   const DiscoveryScreen({super.key});
 
-  void _handleSwipe(BuildContext context, WidgetRef ref, String profileId, SwipeAction action) async {
+  void _handleSwipe(BuildContext context, WidgetRef ref, String profileId,
+      SwipeAction action) async {
     final currentUser = ref.read(authenticatedUserProvider);
 
     if (currentUser == null) {
@@ -28,7 +35,7 @@ class DiscoveryScreen extends ConsumerWidget {
 
     // Show Super Like animation if it's a super like
     if (action == SwipeAction.superLike) {
-      _showSuperLikeAnimation(context);
+      // _showSuperLikeAnimation(context); // Temporarily disabled
       // Wait a bit for the animation to start
       await Future.delayed(const Duration(milliseconds: 500));
     }
@@ -54,24 +61,13 @@ class DiscoveryScreen extends ConsumerWidget {
     }
   }
 
-  void _showSuperLikeAnimation(BuildContext context) {
-    showDialog(
-      context: context,
-      barrierColor: Colors.black26,
-      barrierDismissible: false,
-      builder: (context) => SuperLikeAnimation(
-        onAnimationComplete: () {
-          Navigator.of(context).pop();
-        },
-      ),
-    );
-  }
-
-  void _showMatchDialog(BuildContext context, WidgetRef ref, MatchEntity match) {
+  void _showMatchDialog(
+      BuildContext context, WidgetRef ref, MatchEntity match) {
     final currentUser = ref.read(authenticatedUserProvider);
 
     // Get the matched user ID (the one that's not current user)
-    final matchedUserId = match.user1Id == currentUser?.id ? match.user2Id : match.user1Id;
+    final matchedUserId =
+        match.user1Id == currentUser?.id ? match.user2Id : match.user1Id;
 
     // Create a UserProfileEntity from UserEntity
     // In production, you'd fetch the matched user's full profile
@@ -102,10 +98,16 @@ class DiscoveryScreen extends ConsumerWidget {
     if (context.mounted && currentUser != null) {
       showDialog(
         context: context,
+        barrierColor: Colors.black.withValues(alpha: 0.8),
         barrierDismissible: true,
-        builder: (context) => MatchDialog(
-          currentUser: currentUserProfile,
-          matchedUser: matchedUser,
+        builder: (context) => PremiumMatchDialog(
+          currentUserPhoto: currentUserProfile.photoUrls.isNotEmpty
+              ? currentUserProfile.photoUrls.first
+              : '',
+          matchedUserPhoto: matchedUser.photoUrls.isNotEmpty
+              ? matchedUser.photoUrls.first
+              : '',
+          matchedUserName: matchedUser.displayName,
           onMessageTap: () {
             Navigator.of(context).pop();
             // TODO: Navigate to chat screen
@@ -141,23 +143,22 @@ class DiscoveryScreen extends ConsumerWidget {
               // Header
               _buildHeader(ref),
 
+              // Premium Features Banner
+              _buildPremiumFeaturesBanner(context, ref),
+
               // Cards stack
               Expanded(
                 child: discoveryState.when(
-                  loading: () => const Center(
-                    child: CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation<Color>(AppTheme.bordeaux),
-                    ),
+                  loading: () => Center(
+                    child: SkeletonCardStack(cardCount: 3),
                   ),
                   loaded: (profiles) => profiles.isEmpty
                       ? _buildEmptyState()
                       : _buildCardStack(ref, profiles),
                   error: (message) => _buildErrorState(ref, message),
                   noMoreProfiles: () => _buildEmptyState(),
-                  initial: () => const Center(
-                    child: CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation<Color>(AppTheme.bordeaux),
-                    ),
+                  initial: () => Center(
+                    child: SkeletonCardStack(cardCount: 3),
                   ),
                 ),
               ),
@@ -279,9 +280,12 @@ class DiscoveryScreen extends ConsumerWidget {
                     onTap: () {
                       // TODO: Show full profile view
                     },
-                    onLike: () => _handleSwipe(context, ref, profiles.first.id, SwipeAction.like),
-                    onPass: () => _handleSwipe(context, ref, profiles.first.id, SwipeAction.pass),
-                    onSuperLike: () => _handleSwipe(context, ref, profiles.first.id, SwipeAction.superLike),
+                    onLike: () => _handleSwipe(
+                        context, ref, profiles.first.id, SwipeAction.like),
+                    onPass: () => _handleSwipe(
+                        context, ref, profiles.first.id, SwipeAction.pass),
+                    onSuperLike: () => _handleSwipe(
+                        context, ref, profiles.first.id, SwipeAction.superLike),
                   ),
                 ),
               ],
@@ -310,7 +314,8 @@ class DiscoveryScreen extends ConsumerWidget {
                   icon: Icons.close,
                   color: AppTheme.navy.withValues(alpha: 0.6),
                   size: 28,
-                  onTap: () => _handleSwipe(context, ref, firstProfileId, SwipeAction.pass),
+                  onTap: () => _handleSwipe(
+                      context, ref, firstProfileId, SwipeAction.pass),
                 ),
 
                 // Super Like button
@@ -318,7 +323,8 @@ class DiscoveryScreen extends ConsumerWidget {
                   icon: Icons.star,
                   color: AppTheme.gold,
                   size: 24,
-                  onTap: () => _handleSwipe(context, ref, firstProfileId, SwipeAction.superLike),
+                  onTap: () => _handleSwipe(
+                      context, ref, firstProfileId, SwipeAction.superLike),
                 ),
 
                 // Like button
@@ -326,7 +332,8 @@ class DiscoveryScreen extends ConsumerWidget {
                   icon: Icons.favorite,
                   color: AppTheme.bordeaux,
                   size: 28,
-                  onTap: () => _handleSwipe(context, ref, firstProfileId, SwipeAction.like),
+                  onTap: () => _handleSwipe(
+                      context, ref, firstProfileId, SwipeAction.like),
                 ),
               ],
             ),
@@ -338,9 +345,7 @@ class DiscoveryScreen extends ConsumerWidget {
 
   Widget _buildLoadingIndicator() {
     return const Center(
-      child: CircularProgressIndicator(
-        valueColor: AlwaysStoppedAnimation<Color>(AppTheme.bordeaux),
-      ),
+      child: ProfileCardSkeleton(),
     );
   }
 
@@ -429,7 +434,8 @@ class DiscoveryScreen extends ConsumerWidget {
           ),
           const SizedBox(height: 24),
           ElevatedButton.icon(
-            onPressed: () => ref.read(discoveryNotifierProvider.notifier).refresh(),
+            onPressed: () =>
+                ref.read(discoveryNotifierProvider.notifier).refresh(),
             icon: const Icon(Icons.refresh),
             label: const Text('Réessayer'),
             style: ElevatedButton.styleFrom(
@@ -485,6 +491,100 @@ class _ActionButton extends StatelessWidget {
           icon,
           color: color,
           size: size,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPremiumFeaturesBanner(BuildContext context, WidgetRef ref) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Row(
+        children: [
+          // Top Picks Button
+          Expanded(
+            child: _buildFeatureButton(
+              context,
+              icon: Icons.star_outlined,
+              label: 'Top Picks',
+              color: const Color(0xFFFFD700),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const TopPicksScreen(),
+                  ),
+                );
+              },
+            ),
+          ),
+          const SizedBox(width: 12),
+          // Who Likes You Button
+          Expanded(
+            child: _buildFeatureButton(
+              context,
+              icon: Icons.favorite_outline,
+              label: 'Qui m\'a aimé',
+              color: const Color(0xFFE5E4E2),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const WhoLikesYouScreen(),
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFeatureButton(
+    BuildContext context, {
+    required IconData icon,
+    required String label,
+    required Color color,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: color.withValues(alpha: 0.3),
+            width: 2,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: color.withValues(alpha: 0.1),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              icon,
+              color: color,
+              size: 20,
+            ),
+            const SizedBox(width: 8),
+            Text(
+              label,
+              style: TextStyle(
+                color: AppTheme.navy,
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
         ),
       ),
     );

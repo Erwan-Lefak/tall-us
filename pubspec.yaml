@@ -36,6 +36,7 @@ dependencies:
   # Network & Connectivity
   connectivity_plus: ^6.0.3
   dio: ^5.4.0
+  flutter_cache_manager: ^3.3.1
 
   # Local Storage
   flutter_secure_storage: ^9.0.0
@@ -70,6 +71,17 @@ dependencies:
   flutter_form_builder: ^10.3.0
   form_builder_validators: ^11.0.0
 
+  # Premium Animations
+  flutter_animate: ^4.5.0
+  lottie: ^3.1.2
+  confetti: ^0.7.0
+
+  # Physics & Gestures
+  flutter_card_swiper: ^7.2.0
+
+  # Haptic Feedback
+  haptic_feedback: ^0.5.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -81,6 +93,7 @@ dev_dependencies:
 
   # Linting
   flutter_lints: ^3.0.2
+  mockito: ^5.4.6
 
 flutter:
   uses-material-design: true

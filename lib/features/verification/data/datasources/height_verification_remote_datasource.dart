@@ -40,7 +40,8 @@ class HeightVerificationRemoteDatasource {
       final latestDoc = documents.documents.first;
       final verification = _documentToVerification(latestDoc);
 
-      AppLogger.AppLogger.i('Verification status found: ${verification.status.name}');
+      AppLogger.AppLogger.i(
+          'Verification status found: ${verification.status.name}');
       return Right(verification);
     } on AppwriteException catch (e) {
       AppLogger.AppLogger.e('Failed to get verification status', error: e);
@@ -166,11 +167,11 @@ class HeightVerificationRemoteDatasource {
         ],
       );
 
-      final verifications = documents.documents
-          .map(_documentToVerification)
-          .toList();
+      final verifications =
+          documents.documents.map(_documentToVerification).toList();
 
-      AppLogger.AppLogger.i('Found ${verifications.length} pending verifications');
+      AppLogger.AppLogger.i(
+          'Found ${verifications.length} pending verifications');
       return Right(verifications);
     } on AppwriteException catch (e) {
       AppLogger.AppLogger.e('Failed to get pending verifications', error: e);

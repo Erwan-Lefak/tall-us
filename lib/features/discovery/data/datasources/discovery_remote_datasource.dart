@@ -42,7 +42,8 @@ class DiscoveryRemoteDataSource {
 
       // Filter by gender if preferences specified
       if (preferredGenders.isNotEmpty) {
-        final genderQuery = preferredGenders.map((g) => 'gender="$g"').join(' || ');
+        final genderQuery =
+            preferredGenders.map((g) => 'gender="$g"').join(' || ');
         queries.add('($genderQuery)');
       }
 
@@ -71,7 +72,8 @@ class DiscoveryRemoteDataSource {
           }
 
           // Height filter
-          if (profile.heightCm < minHeightCm || profile.heightCm > maxHeightCm) {
+          if (profile.heightCm < minHeightCm ||
+              profile.heightCm > maxHeightCm) {
             continue;
           }
 

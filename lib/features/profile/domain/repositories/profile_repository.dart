@@ -12,10 +12,12 @@ abstract class ProfileRepository {
   Future<Either<Failure, UserProfileEntity>> getCurrentUserProfile();
 
   /// Create new user profile
-  Future<Either<Failure, UserProfileEntity>> createProfile(UserProfileEntity profile);
+  Future<Either<Failure, UserProfileEntity>> createProfile(
+      UserProfileEntity profile);
 
   /// Update user profile
-  Future<Either<Failure, UserProfileEntity>> updateProfile(UserProfileEntity profile);
+  Future<Either<Failure, UserProfileEntity>> updateProfile(
+      UserProfileEntity profile);
 
   /// Update specific profile fields
   Future<Either<Failure, UserProfileEntity>> updateProfileFields({
@@ -54,11 +56,12 @@ abstract class ProfileRepository {
   });
 
   /// Get discovery preferences
-  Future<Either<Failure, DiscoveryPreferencesEntity>> getDiscoveryPreferences(String userId);
+  Future<Either<Failure, DiscoveryPreferencesEntity>> getDiscoveryPreferences(
+      String userId);
 
   /// Update discovery preferences
-  Future<Either<Failure, DiscoveryPreferencesEntity>> updateDiscoveryPreferences(
-      DiscoveryPreferencesEntity preferences);
+  Future<Either<Failure, DiscoveryPreferencesEntity>>
+      updateDiscoveryPreferences(DiscoveryPreferencesEntity preferences);
 
   /// Delete user profile
   Future<Either<Failure, void>> deleteProfile(String userId);

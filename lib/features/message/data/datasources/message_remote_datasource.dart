@@ -127,7 +127,8 @@ class MessageRemoteDataSource {
     String matchId,
     void Function(MessageEntity) onMessage,
   ) {
-    AppLogger.i('Realtime subscription - TODO: Implement Appwrite Realtime properly');
+    AppLogger.i(
+        'Realtime subscription - TODO: Implement Appwrite Realtime properly');
     // TODO: Implement Appwrite Realtime
     // The API has changed, need to check the correct implementation
     // For now, messages will be loaded manually

@@ -49,7 +49,8 @@ class ProfileNotifier extends StateNotifier<ProfileState> {
     required UpdateProfileUseCase updateProfileUseCase,
     required UploadPhotoUseCase uploadPhotoUseCase,
     required GetDiscoveryPreferencesUseCase getDiscoveryPreferencesUseCase,
-    required UpdateDiscoveryPreferencesUseCase updateDiscoveryPreferencesUseCase,
+    required UpdateDiscoveryPreferencesUseCase
+        updateDiscoveryPreferencesUseCase,
   })  : _getProfileUseCase = getProfileUseCase,
         _updateProfileUseCase = updateProfileUseCase,
         _uploadPhotoUseCase = uploadPhotoUseCase,
@@ -169,7 +170,8 @@ class ProfileNotifier extends StateNotifier<ProfileState> {
   Future<void> deletePhoto(String photoUrl) async {
     if (state.profile == null) return;
 
-    final updatedPhotos = state.profile!.photoUrls.where((url) => url != photoUrl).toList();
+    final updatedPhotos =
+        state.profile!.photoUrls.where((url) => url != photoUrl).toList();
     await updateProfileFields(photoUrls: updatedPhotos);
   }
 
@@ -189,7 +191,8 @@ class ProfileNotifier extends StateNotifier<ProfileState> {
   }
 
   /// Update discovery preferences
-  Future<void> updateDiscoveryPreferences(DiscoveryPreferencesEntity preferences) async {
+  Future<void> updateDiscoveryPreferences(
+      DiscoveryPreferencesEntity preferences) async {
     final result = await _updateDiscoveryPreferencesUseCase(preferences);
 
     result.fold(
@@ -216,7 +219,8 @@ final profileUseCasesProvider = Provider((ref) {
 });
 
 /// Provider for profile notifier
-final profileProvider = StateNotifierProvider<ProfileNotifier, ProfileState>((ref) {
+final profileProvider =
+    StateNotifierProvider<ProfileNotifier, ProfileState>((ref) {
   // This will be provided by dependency injection
   // For now, returning null - will be implemented with DI
   throw UnimplementedError('Will be provided by DI container');

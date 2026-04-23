@@ -15,7 +15,8 @@ final firebaseMessagingProvider = Provider<FirebaseMessaging>((ref) {
 });
 
 /// Provider for Local Notifications
-final localNotificationsProvider = Provider<FlutterLocalNotificationsPlugin>((ref) {
+final localNotificationsProvider =
+    Provider<FlutterLocalNotificationsPlugin>((ref) {
   return FlutterLocalNotificationsPlugin();
 });
 
@@ -29,9 +30,12 @@ final firebaseMessagingServiceProvider =
 });
 
 /// Provider for Notification Remote Datasource
-final notificationRemoteDatasourceProvider = Provider<NotificationRemoteDatasource>((ref) {
-  final fcmServerKey = const String.fromEnvironment('FCM_SERVER_KEY', defaultValue: '');
-  final courierAuthToken = const String.fromEnvironment('COURIER_AUTH_TOKEN', defaultValue: '');
+final notificationRemoteDatasourceProvider =
+    Provider<NotificationRemoteDatasource>((ref) {
+  final fcmServerKey =
+      const String.fromEnvironment('FCM_SERVER_KEY', defaultValue: '');
+  final courierAuthToken =
+      const String.fromEnvironment('COURIER_AUTH_TOKEN', defaultValue: '');
 
   return NotificationRemoteDatasource(
     database: ref.watch(databasesProvider),
@@ -50,12 +54,14 @@ final notificationRepositoryProvider = Provider<NotificationRepository>((ref) {
 });
 
 /// Provider for notification permissions state
-final notificationPermissionsProvider = FutureProvider.autoDispose<bool>((ref) async {
+final notificationPermissionsProvider =
+    FutureProvider.autoDispose<bool>((ref) async {
   final repository = ref.watch(notificationRepositoryProvider);
   final result = await repository.requestPermissions();
   return result.fold(
     (failure) {
-      AppLogger.e('Notification permission request failed', error: failure.toString());
+      AppLogger.e('Notification permission request failed',
+          error: failure.toString());
       return false;
     },
     (granted) => granted,
@@ -106,7 +112,8 @@ class NotificationServiceState {
 }
 
 /// Notification service notifier
-class NotificationServiceNotifier extends StateNotifier<NotificationServiceState> {
+class NotificationServiceNotifier
+    extends StateNotifier<NotificationServiceState> {
   final NotificationRepository _repository;
   final FirebaseMessagingService _messagingService;
 
@@ -185,8 +192,8 @@ class NotificationServiceNotifier extends StateNotifier<NotificationServiceState
 }
 
 /// Provider for notification service
-final notificationServiceProvider =
-    StateNotifierProvider<NotificationServiceNotifier, NotificationServiceState>((ref) {
+final notificationServiceProvider = StateNotifierProvider<
+    NotificationServiceNotifier, NotificationServiceState>((ref) {
   final repository = ref.watch(notificationRepositoryProvider);
   final messagingService = ref.watch(firebaseMessagingServiceProvider);
   final notifier = NotificationServiceNotifier(repository, messagingService);

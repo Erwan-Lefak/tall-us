@@ -427,13 +427,15 @@ class _DiscoveryPreferencesScreenState
                 selected: _preferences.preferredGenders.contains('femme'),
                 onSelected: (selected) {
                   setState(() {
-                    final genders = List<String>.from(_preferences.preferredGenders);
+                    final genders =
+                        List<String>.from(_preferences.preferredGenders);
                     if (selected) {
                       genders.add('femme');
                     } else {
                       genders.remove('femme');
                     }
-                    _preferences = _preferences.copyWith(preferredGenders: genders);
+                    _preferences =
+                        _preferences.copyWith(preferredGenders: genders);
                   });
                 },
                 selectedColor: AppTheme.bordeaux.withValues(alpha: 0.3),
@@ -452,13 +454,15 @@ class _DiscoveryPreferencesScreenState
                 selected: _preferences.preferredGenders.contains('homme'),
                 onSelected: (selected) {
                   setState(() {
-                    final genders = List<String>.from(_preferences.preferredGenders);
+                    final genders =
+                        List<String>.from(_preferences.preferredGenders);
                     if (selected) {
                       genders.add('homme');
                     } else {
                       genders.remove('homme');
                     }
-                    _preferences = _preferences.copyWith(preferredGenders: genders);
+                    _preferences =
+                        _preferences.copyWith(preferredGenders: genders);
                   });
                 },
                 selectedColor: AppTheme.bordeaux.withValues(alpha: 0.3),
@@ -477,13 +481,15 @@ class _DiscoveryPreferencesScreenState
                 selected: _preferences.preferredGenders.contains('non-binaire'),
                 onSelected: (selected) {
                   setState(() {
-                    final genders = List<String>.from(_preferences.preferredGenders);
+                    final genders =
+                        List<String>.from(_preferences.preferredGenders);
                     if (selected) {
                       genders.add('non-binaire');
                     } else {
                       genders.remove('non-binaire');
                     }
-                    _preferences = _preferences.copyWith(preferredGenders: genders);
+                    _preferences =
+                        _preferences.copyWith(preferredGenders: genders);
                   });
                 },
                 selectedColor: AppTheme.bordeaux.withValues(alpha: 0.3),
@@ -492,9 +498,10 @@ class _DiscoveryPreferencesScreenState
                   color: _preferences.preferredGenders.contains('non-binaire')
                       ? AppTheme.bordeaux
                       : AppTheme.navy.withValues(alpha: 0.7),
-                  fontWeight: _preferences.preferredGenders.contains('non-binaire')
-                      ? FontWeight.bold
-                      : FontWeight.normal,
+                  fontWeight:
+                      _preferences.preferredGenders.contains('non-binaire')
+                          ? FontWeight.bold
+                          : FontWeight.normal,
                 ),
               ),
             ],

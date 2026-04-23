@@ -10,7 +10,8 @@ class UpdateProfileUseCase {
   UpdateProfileUseCase(this.repository);
 
   /// Update user profile
-  Future<Either<Failure, UserProfileEntity>> call(UserProfileEntity profile) async {
+  Future<Either<Failure, UserProfileEntity>> call(
+      UserProfileEntity profile) async {
     return await repository.updateProfile(profile);
   }
 

@@ -12,7 +12,7 @@ import 'package:tall_us/features/auth/domain/repositories/auth_repository.dart';
 /// Implements AuthRepository using Appwrite
 class AuthRepositoryImpl implements AuthRepository {
   final AuthRemoteDataSource _remoteDataSource;
-  
+
   AuthRepositoryImpl(this._remoteDataSource);
 
   @override
@@ -80,7 +80,8 @@ class AuthRepositoryImpl implements AuthRepository {
       return Right(user);
     } on AppwriteException catch (e) {
       AppLogger.e('Login failed', error: e);
-      AppLogger.e('Appwrite error code: ${e.code}, message: ${e.message}, type: ${e.type}');
+      AppLogger.e(
+          'Appwrite error code: ${e.code}, message: ${e.message}, type: ${e.type}');
 
       if (e.code?.toString() == 'user_invalid_credentials') {
         return Left(AuthFailure.wrongCredentials());
@@ -91,7 +92,8 @@ class AuthRepositoryImpl implements AuthRepository {
       }
 
       // Inclure le code d'erreur dans le message pour le traducteur
-      final errorMessage = '${e.message?.toString() ?? 'Login failed'} [${e.code?.toString() ?? 'LOGIN_ERROR'}]';
+      final errorMessage =
+          '${e.message?.toString() ?? 'Login failed'} [${e.code?.toString() ?? 'LOGIN_ERROR'}]';
       return Left(ServerFailure(
         message: errorMessage,
         code: e.code?.toString() ?? 'LOGIN_ERROR',

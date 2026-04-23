@@ -9,7 +9,8 @@ import 'package:tall_us/features/profile/domain/entities/user_profile_entity.dar
 class DiscoveryNotifier extends StateNotifier<DiscoveryState> {
   final GetProfilesToDiscoverUseCase _getProfilesUseCase;
 
-  DiscoveryNotifier(this._getProfilesUseCase) : super(const DiscoveryState.initial()) {
+  DiscoveryNotifier(this._getProfilesUseCase)
+      : super(const DiscoveryState.initial()) {
     loadProfiles();
   }
 
@@ -71,8 +72,11 @@ class DiscoveryNotifier extends StateNotifier<DiscoveryState> {
         city: 'Paris',
         country: 'France',
         gender: 'femme',
-        bio: 'Passionnée de randonnée et de photographie. Je cherche quelqu\'un qui atteint les sommets avec moi ! 🏔️',
-        photoUrls: ['https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=600&fit=crop'],
+        bio:
+            'Passionnée de randonnée et de photographie. Je cherche quelqu\'un qui atteint les sommets avec moi ! 🏔️',
+        photoUrls: [
+          'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=600&fit=crop'
+        ],
         heightVerified: true,
       ),
       UserProfileEntity(
@@ -84,8 +88,11 @@ class DiscoveryNotifier extends StateNotifier<DiscoveryState> {
         city: 'Lyon',
         country: 'France',
         gender: 'femme',
-        bio: 'Architecte, amatrice de vin bio et de bonnes blagues. 1m80 sans talons ! 🍷',
-        photoUrls: ['https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=400&h=600&fit=crop'],
+        bio:
+            'Architecte, amatrice de vin bio et de bonnes blagues. 1m80 sans talons ! 🍷',
+        photoUrls: [
+          'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=400&h=600&fit=crop'
+        ],
         heightVerified: true,
       ),
       UserProfileEntity(
@@ -97,8 +104,11 @@ class DiscoveryNotifier extends StateNotifier<DiscoveryState> {
         city: 'Bordeaux',
         country: 'France',
         gender: 'femme',
-        bio: 'Je cherche quelqu\'un qui me comprend... littéralement, vu ma taille ! 😄',
-        photoUrls: ['https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=400&h=600&fit=crop'],
+        bio:
+            'Je cherche quelqu\'un qui me comprend... littéralement, vu ma taille ! 😄',
+        photoUrls: [
+          'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=400&h=600&fit=crop'
+        ],
         heightVerified: true,
       ),
       UserProfileEntity(
@@ -110,21 +120,28 @@ class DiscoveryNotifier extends StateNotifier<DiscoveryState> {
         city: 'Marseille',
         country: 'France',
         gender: 'femme',
-        bio: 'Voyageuse, rêveuse et grande ! À la recherche de quelqu\'un qui voit haut ! ✈️',
-        photoUrls: ['https://images.unsplash.com/photo-1502685104226-ee32379fefbe?w=400&h=600&fit=crop'],
+        bio:
+            'Voyageuse, rêveuse et grande ! À la recherche de quelqu\'un qui voit haut ! ✈️',
+        photoUrls: [
+          'https://images.unsplash.com/photo-1502685104226-ee32379fefbe?w=400&h=600&fit=crop'
+        ],
         heightVerified: true,
       ),
       UserProfileEntity(
         id: 'demo5',
         userId: 'demo5',
         displayName: 'Isabelle',
-        birthday: DateTime.now().subtract(const Duration(days: 10220)), // 28 ans
+        birthday:
+            DateTime.now().subtract(const Duration(days: 10220)), // 28 ans
         heightCm: 185,
         city: 'Nantes',
         country: 'France',
         gender: 'femme',
-        bio: '1m85 et fière ! J\'adore le basketball et la cuisine. Qui pour un match ? 🏀',
-        photoUrls: ['https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&h=600&fit=crop'],
+        bio:
+            '1m85 et fière ! J\'adore le basketball et la cuisine. Qui pour un match ? 🏀',
+        photoUrls: [
+          'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&h=600&fit=crop'
+        ],
         heightVerified: true,
       ),
     ];
@@ -139,7 +156,8 @@ class DiscoveryNotifier extends StateNotifier<DiscoveryState> {
   void removeProfile(String profileId) {
     state.whenOrNull(
       loaded: (profiles) {
-        final updatedProfiles = profiles.where((p) => p.id != profileId).toList();
+        final updatedProfiles =
+            profiles.where((p) => p.id != profileId).toList();
         if (updatedProfiles.isEmpty) {
           state = const DiscoveryState.noMoreProfiles();
         } else {

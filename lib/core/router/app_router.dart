@@ -29,10 +29,10 @@ class AppRouter {
 
         // While checking auth status, show splash
         if (authState.maybeWhen(
-              loading: () => true,
-              initial: () => true,
-              orElse: () => false,
-            )) {
+          loading: () => true,
+          initial: () => true,
+          orElse: () => false,
+        )) {
           return '/splash';
         }
 

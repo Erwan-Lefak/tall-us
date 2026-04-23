@@ -82,10 +82,13 @@ class SwipeRepositoryImpl implements SwipeRepository {
         minAge: preferences.minAge,
         maxAge: preferences.maxAge,
         maxDistance: preferences.maxDistanceKm,
-        preferredGender: preferences.preferredGenders.isNotEmpty ? preferences.preferredGenders.first : null,
+        preferredGender: preferences.preferredGenders.isNotEmpty
+            ? preferences.preferredGenders.first
+            : null,
         minHeight: preferences.minHeightCm,
         maxHeight: preferences.maxHeightCm,
-        onlyShowVerified: false, // Pas de propriété onlyShowVerified dans DiscoveryPreferencesEntity
+        onlyShowVerified:
+            false, // Pas de propriété onlyShowVerified dans DiscoveryPreferencesEntity
         limit: limit,
       );
 
@@ -126,7 +129,8 @@ class SwipeRepositoryImpl implements SwipeRepository {
   }
 
   @override
-  Future<Either<Failure, List<SwipeEntity>>> getUserSwipes(String userId) async {
+  Future<Either<Failure, List<SwipeEntity>>> getUserSwipes(
+      String userId) async {
     try {
       final swipesData = await remoteDataSource.getRecentSwipes(userId);
 
@@ -134,9 +138,10 @@ class SwipeRepositoryImpl implements SwipeRepository {
         return SwipeEntity(
           id: data['\$id'] ?? data['id'] ?? '',
           swiperId: data['fromUserId'] ?? '', // Adapter pour fromUserId
-          targetId: data['toUserId'] ?? '',   // Adapter pour toUserId
+          targetId: data['toUserId'] ?? '', // Adapter pour toUserId
           action: _parseSwipeAction(data['action'] ?? ''),
-          createdAt: DateTime.parse(data['createdAt'] ?? DateTime.now().toIso8601String()),
+          createdAt: DateTime.parse(
+              data['createdAt'] ?? DateTime.now().toIso8601String()),
         );
       }).toList();
 
@@ -159,7 +164,8 @@ class SwipeRepositoryImpl implements SwipeRepository {
       AppLogger.i('Processing rewind for user: $userId');
 
       // Get most recent swipe
-      final swipesData = await remoteDataSource.getRecentSwipes(userId, limit: 1);
+      final swipesData =
+          await remoteDataSource.getRecentSwipes(userId, limit: 1);
 
       if (swipesData.isEmpty) {
         return Left(const ValidationFailure(
@@ -170,15 +176,17 @@ class SwipeRepositoryImpl implements SwipeRepository {
       final lastSwipeData = swipesData.first;
 
       // Delete the swipe
-      await remoteDataSource.deleteSwipe(lastSwipeData['id'] ?? lastSwipeData['\$id'] ?? '');
+      await remoteDataSource
+          .deleteSwipe(lastSwipeData['id'] ?? lastSwipeData['\$id'] ?? '');
 
       // Return the deleted swipe
       final swipe = SwipeEntity(
         id: lastSwipeData['id'] ?? lastSwipeData['\$id'] ?? '',
         swiperId: lastSwipeData['fromUserId'] ?? '', // Adapter pour fromUserId
-        targetId: lastSwipeData['toUserId'] ?? '',   // Adapter pour toUserId
+        targetId: lastSwipeData['toUserId'] ?? '', // Adapter pour toUserId
         action: _parseSwipeAction(lastSwipeData['action'] ?? ''),
-        createdAt: DateTime.parse(lastSwipeData['createdAt'] ?? DateTime.now().toIso8601String()),
+        createdAt: DateTime.parse(
+            lastSwipeData['createdAt'] ?? DateTime.now().toIso8601String()),
       );
 
       return Right(swipe);
@@ -201,7 +209,8 @@ class SwipeRepositoryImpl implements SwipeRepository {
   }) async {
     try {
       // Check if a match already exists
-      final alreadyMatched = await matchDataSource.matchExists(user1Id, user2Id);
+      final alreadyMatched =
+          await matchDataSource.matchExists(user1Id, user2Id);
       if (alreadyMatched) {
         AppLogger.i('Match already exists between $user1Id and $user2Id');
         return null;

@@ -3,6 +3,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:tall_us/core/theme/app_theme.dart';
 import 'package:tall_us/features/swipe/presentation/screens/discovery_screen.dart';
 import 'package:tall_us/features/match/presentation/screens/matches_screen.dart';
+import 'package:tall_us/features/social/presentation/screens/social_screen.dart';
 import 'package:tall_us/features/profile/presentation/screens/profile_screen.dart';
 
 /// Main home screen with bottom navigation
@@ -19,6 +20,7 @@ class _HomeScreenWithNavState extends ConsumerState<HomeScreenWithNav> {
   final List<Widget> _screens = const [
     DiscoveryScreen(),
     MatchesScreen(),
+    SocialScreen(),
     ProfileScreen(),
   ];
 
@@ -63,6 +65,11 @@ class _HomeScreenWithNavState extends ConsumerState<HomeScreenWithNav> {
               icon: Icon(Icons.chat_bubble_outline),
               activeIcon: Icon(Icons.chat_bubble),
               label: 'Matchs',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.groups_outlined),
+              activeIcon: Icon(Icons.groups),
+              label: 'Social',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.person_outline),

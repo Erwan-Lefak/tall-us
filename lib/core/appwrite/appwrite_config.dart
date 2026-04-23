@@ -29,12 +29,22 @@ class AppwriteConfig {
   static const String notificationsCollection = 'notifications';
   static const String verificationsCollection = 'verifications';
 
+  // New collections for Phase 1 features
+  static const String eventsCollection = 'events';
+  static const String groupsCollection = 'groups';
+  static const String likesCollection = 'likes';
+  static const String topPicksCollection = 'top_picks';
+  static const String messageReactionsCollection = 'message_reactions';
+  static const String userExtendedCollection = 'user_extended';
+
   // JWT Configuration
   static const String jwtSecret = String.fromEnvironment('JWT_SECRET');
-  static const String jwtRefreshSecret = String.fromEnvironment('JWT_REFRESH_SECRET');
+  static const String jwtRefreshSecret =
+      String.fromEnvironment('JWT_REFRESH_SECRET');
 
   // OAuth Providers - Client IDs
-  static const String googleClientId = String.fromEnvironment('GOOGLE_CLIENT_ID');
+  static const String googleClientId =
+      String.fromEnvironment('GOOGLE_CLIENT_ID');
   static const String appleClientId = String.fromEnvironment('APPLE_CLIENT_ID');
 
   // Rate Limits

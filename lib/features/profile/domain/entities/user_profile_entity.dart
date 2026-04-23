@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:tall_us/features/profile/domain/entities/prompt_entity.dart';
 
 /// Entity representing a complete user profile
 class UserProfileEntity extends Equatable {
@@ -13,10 +14,35 @@ class UserProfileEntity extends Equatable {
   final String city;
   final String country;
   final List<String> photoUrls;
-  final String? promptAnswer;
-  final String? promptId;
+
+  // Prompts system (NEW - replaces single prompt)
+  final List<UserPrompt> prompts;
+
+  // Work & Education (NEW)
+  final String? jobTitle;
+  final String? company;
+  final String? school;
+
+  // Social connections (NEW)
+  final String? instagramUsername;
+  final List<String>? topArtists; // Spotify integration
+  final String? anthemSongId;
+
+  // Verification (NEW)
   final bool heightVerified;
+  final bool idVerified;
+
+  // Gender & Orientation (ENHANCED)
+  final String? genderIdentity; // Homme, Femme, Non-binaire, etc.
+  final List<String>? orientations; // Hétéro, Gay, Bi, etc.
+
+  // Stats (NEW)
   final int? age;
+  final DateTime? createdAt;
+  final int? profileViews;
+
+  // Interests (NEW)
+  final List<String> interests;
 
   const UserProfileEntity({
     required this.id,
@@ -30,10 +56,21 @@ class UserProfileEntity extends Equatable {
     required this.city,
     required this.country,
     this.photoUrls = const [],
-    this.promptAnswer,
-    this.promptId,
+    this.prompts = const [],
+    this.jobTitle,
+    this.company,
+    this.school,
+    this.instagramUsername,
+    this.topArtists,
+    this.anthemSongId,
     this.heightVerified = false,
+    this.idVerified = false,
+    this.genderIdentity,
+    this.orientations,
     this.age,
+    this.createdAt,
+    this.profileViews,
+    this.interests = const [],
   });
 
   /// Calculate age from birthday
@@ -61,8 +98,26 @@ class UserProfileEntity extends Equatable {
     return bio != null &&
         bio!.isNotEmpty &&
         photoUrls.isNotEmpty &&
-        promptAnswer != null &&
-        promptAnswer!.isNotEmpty;
+        prompts.isNotEmpty;
+  }
+
+  /// Check completion percentage
+  double getCompletionPercentage() {
+    int completed = 0;
+    int total = 10;
+
+    if (bio != null && bio!.isNotEmpty) completed++;
+    if (photoUrls.length >= 3) completed++;
+    if (prompts.isNotEmpty) completed++;
+    if (jobTitle != null) completed++;
+    if (company != null) completed++;
+    if (school != null) completed++;
+    if (interests.isNotEmpty) completed++;
+    if (instagramUsername != null) completed++;
+    if (heightVerified) completed++;
+    if (idVerified) completed++;
+
+    return completed / total;
   }
 
   @override
@@ -78,10 +133,21 @@ class UserProfileEntity extends Equatable {
         city,
         country,
         photoUrls,
-        promptAnswer,
-        promptId,
+        prompts,
+        jobTitle,
+        company,
+        school,
+        instagramUsername,
+        topArtists,
+        anthemSongId,
         heightVerified,
+        idVerified,
+        genderIdentity,
+        orientations,
         age,
+        createdAt,
+        profileViews,
+        interests,
       ];
 
   UserProfileEntity copyWith({
@@ -96,10 +162,21 @@ class UserProfileEntity extends Equatable {
     String? city,
     String? country,
     List<String>? photoUrls,
-    String? promptAnswer,
-    String? promptId,
+    List<UserPrompt>? prompts,
+    String? jobTitle,
+    String? company,
+    String? school,
+    String? instagramUsername,
+    List<String>? topArtists,
+    String? anthemSongId,
     bool? heightVerified,
+    bool? idVerified,
+    String? genderIdentity,
+    List<String>? orientations,
     int? age,
+    DateTime? createdAt,
+    int? profileViews,
+    List<String>? interests,
   }) {
     return UserProfileEntity(
       id: id ?? this.id,
@@ -113,10 +190,21 @@ class UserProfileEntity extends Equatable {
       city: city ?? this.city,
       country: country ?? this.country,
       photoUrls: photoUrls ?? this.photoUrls,
-      promptAnswer: promptAnswer ?? this.promptAnswer,
-      promptId: promptId ?? this.promptId,
+      prompts: prompts ?? this.prompts,
+      jobTitle: jobTitle ?? this.jobTitle,
+      company: company ?? this.company,
+      school: school ?? this.school,
+      instagramUsername: instagramUsername ?? this.instagramUsername,
+      topArtists: topArtists ?? this.topArtists,
+      anthemSongId: anthemSongId ?? this.anthemSongId,
       heightVerified: heightVerified ?? this.heightVerified,
+      idVerified: idVerified ?? this.idVerified,
+      genderIdentity: genderIdentity ?? this.genderIdentity,
+      orientations: orientations ?? this.orientations,
       age: age ?? this.age,
+      createdAt: createdAt ?? this.createdAt,
+      profileViews: profileViews ?? this.profileViews,
+      interests: interests ?? this.interests,
     );
   }
 
@@ -140,6 +228,47 @@ class UserProfileEntity extends Equatable {
       birthday = DateTime.now(); // Fallback
     }
 
+    // Parse prompts (NEW)
+    List<UserPrompt> prompts = [];
+    if (map['prompts'] != null && map['prompts'] is List) {
+      prompts = (map['prompts'] as List)
+          .map((p) => UserPrompt(
+                promptId: p['promptId'] ?? '',
+                promptText: p['promptText'] ?? '',
+                answer: p['answer'] ?? '',
+                displayOrder: p['displayOrder'] ?? 0,
+              ))
+          .toList();
+    }
+
+    // Parse interests (NEW)
+    List<String> interests = [];
+    if (map['interests'] != null && map['interests'] is List) {
+      interests = List<String>.from(map['interests'] as List);
+    }
+
+    // Parse orientations (NEW)
+    List<String>? orientations;
+    if (map['orientations'] != null && map['orientations'] is List) {
+      orientations = List<String>.from(map['orientations'] as List);
+    }
+
+    // Parse topArtists (NEW)
+    List<String>? topArtists;
+    if (map['topArtists'] != null && map['topArtists'] is List) {
+      topArtists = List<String>.from(map['topArtists'] as List);
+    }
+
+    // Parse createdAt (NEW)
+    DateTime? createdAt;
+    if (map['createdAt'] != null) {
+      if (map['createdAt'] is String) {
+        createdAt = DateTime.parse(map['createdAt'] as String);
+      } else if (map['createdAt'] is DateTime) {
+        createdAt = map['createdAt'] as DateTime;
+      }
+    }
+
     return UserProfileEntity(
       id: map['\$id'] ?? map['id'] ?? '',
       userId: map['userId'] ?? map['user_id'] ?? '',
@@ -152,10 +281,21 @@ class UserProfileEntity extends Equatable {
       city: map['city'] ?? '',
       country: map['country'] ?? '',
       photoUrls: photoUrls,
-      promptAnswer: map['promptAnswer'] ?? map['prompt_answer'],
-      promptId: map['promptId'] ?? map['prompt_id'],
+      prompts: prompts,
+      jobTitle: map['jobTitle'] ?? map['job_title'],
+      company: map['company'],
+      school: map['school'],
+      instagramUsername: map['instagramUsername'] ?? map['instagram_username'],
+      topArtists: topArtists,
+      anthemSongId: map['anthemSongId'] ?? map['anthem_song_id'],
       heightVerified: map['heightVerified'] ?? map['height_verified'] ?? false,
+      idVerified: map['idVerified'] ?? map['id_verified'] ?? false,
+      genderIdentity: map['genderIdentity'] ?? map['gender_identity'],
+      orientations: orientations,
       age: map['age'],
+      createdAt: createdAt,
+      profileViews: map['profileViews'] ?? map['profile_views'],
+      interests: interests,
     );
   }
 
@@ -173,10 +313,28 @@ class UserProfileEntity extends Equatable {
       'city': city,
       'country': country,
       'photoUrls': photoUrls,
-      'promptAnswer': promptAnswer,
-      'promptId': promptId,
+      'prompts': prompts
+          .map((p) => {
+                'promptId': p.promptId,
+                'promptText': p.promptText,
+                'answer': p.answer,
+                'displayOrder': p.displayOrder,
+              })
+          .toList(),
+      'jobTitle': jobTitle,
+      'company': company,
+      'school': school,
+      'instagramUsername': instagramUsername,
+      'topArtists': topArtists,
+      'anthemSongId': anthemSongId,
       'heightVerified': heightVerified,
+      'idVerified': idVerified,
+      'genderIdentity': genderIdentity,
+      'orientations': orientations,
       'age': age,
+      'createdAt': createdAt?.toIso8601String(),
+      'profileViews': profileViews,
+      'interests': interests,
     };
   }
 }

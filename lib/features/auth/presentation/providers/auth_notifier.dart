@@ -83,7 +83,8 @@ class AuthNotifier extends StateNotifier<AuthState> {
     result.fold(
       (failure) {
         // Afficher l'erreur complète dans la console pour le débogage
-        AppLogger.e('Login failed: ${failure.message}', error: failure.toString());
+        AppLogger.e('Login failed: ${failure.message}',
+            error: failure.toString());
         if (failure is ServerFailure) {
           AppLogger.e('Original error details', error: failure.toString());
         }
@@ -291,7 +292,8 @@ class AuthNotifier extends StateNotifier<AuthState> {
       'user_email_missing': 'L\'adresse email est manquante',
       'user_password_missing': 'Le mot de passe est manquant',
       'user_name_missing': 'Le nom est manquant',
-      'general_session_active': 'Une session est déjà active. Veuillez vous déconnecter d\'abord.',
+      'general_session_active':
+          'Une session est déjà active. Veuillez vous déconnecter d\'abord.',
       'general_unauthorized': 'Non autorisé',
       'general_forbidden': 'Accès refusé',
       'general_rate_limit_exceeded': 'Trop de tentatives. Réessayez plus tard.',

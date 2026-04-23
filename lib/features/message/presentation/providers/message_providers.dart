@@ -6,7 +6,8 @@ import 'package:tall_us/features/message/presentation/providers/message_notifier
 import 'package:tall_us/features/message/presentation/providers/message_state.dart';
 
 /// Provider for MessageRemoteDataSource
-final messageRemoteDataSourceProvider = Provider<MessageRemoteDataSource>((ref) {
+final messageRemoteDataSourceProvider =
+    Provider<MessageRemoteDataSource>((ref) {
   final databases = Databases(ref.read(appwriteClientProvider));
   final realtime = Realtime(ref.read(appwriteClientProvider));
   return MessageRemoteDataSource(
@@ -16,7 +17,9 @@ final messageRemoteDataSourceProvider = Provider<MessageRemoteDataSource>((ref) 
 });
 
 /// Provider for MessageNotifier (scoped to match ID)
-final messageNotifierProvider = StateNotifierProvider.family<MessageNotifier, MessageState, String>((ref, matchId) {
+final messageNotifierProvider =
+    StateNotifierProvider.family<MessageNotifier, MessageState, String>(
+        (ref, matchId) {
   final dataSource = ref.read(messageRemoteDataSourceProvider);
   final notifier = MessageNotifier(dataSource);
 

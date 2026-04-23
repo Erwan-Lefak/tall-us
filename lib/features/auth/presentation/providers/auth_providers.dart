@@ -89,14 +89,16 @@ final deleteAccountUseCaseProvider = Provider<DeleteAccountUseCase>((ref) {
 // ============================================================================
 
 /// Provider for AuthNotifier
-final authNotifierProvider = StateNotifierProvider<AuthNotifier, AuthState>((ref) {
+final authNotifierProvider =
+    StateNotifierProvider<AuthNotifier, AuthState>((ref) {
   return AuthNotifier(
     loginUseCase: ref.watch(loginUseCaseProvider),
     registerUseCase: ref.watch(registerUseCaseProvider),
     logoutUseCase: ref.watch(logoutUseCaseProvider),
     getCurrentUserUseCase: ref.watch(getCurrentUserUseCaseProvider),
     refreshTokenUseCase: ref.watch(refreshTokenUseCaseProvider),
-    sendPasswordResetEmailUseCase: ref.watch(sendPasswordResetEmailUseCaseProvider),
+    sendPasswordResetEmailUseCase:
+        ref.watch(sendPasswordResetEmailUseCaseProvider),
     resetPasswordUseCase: ref.watch(resetPasswordUseCaseProvider),
     updatePasswordUseCase: ref.watch(updatePasswordUseCaseProvider),
     deleteAccountUseCase: ref.watch(deleteAccountUseCaseProvider),

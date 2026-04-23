@@ -102,8 +102,7 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen>
               ),
 
               // Action buttons
-              if (_profiles.isNotEmpty && !_isLoading)
-                _buildActionButtons(),
+              if (_profiles.isNotEmpty && !_isLoading) _buildActionButtons(),
             ],
           ),
         ),

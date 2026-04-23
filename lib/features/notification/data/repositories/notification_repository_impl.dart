@@ -47,7 +47,8 @@ class NotificationRepositoryImpl implements NotificationRepository {
       }
 
       AppLogger.i('Notification permission: ${settings.authorizationStatus}');
-      return Right(settings.authorizationStatus == AuthorizationStatus.authorized);
+      return Right(
+          settings.authorizationStatus == AuthorizationStatus.authorized);
     } catch (e) {
       AppLogger.e('Error requesting notification permissions', error: e);
       return Left(NotificationPermissionFailure(e.toString()));
@@ -179,7 +180,8 @@ class NotificationRepositoryImpl implements NotificationRepository {
   }
 
   @override
-  Future<Either<Failure, NotificationPreferences>> getPreferences(String userId) async {
+  Future<Either<Failure, NotificationPreferences>> getPreferences(
+      String userId) async {
     try {
       // In production, fetch from database
       // For now, return default preferences
@@ -246,7 +248,8 @@ class NotificationRepositoryImpl implements NotificationRepository {
   }
 
   @override
-  Future<Either<Failure, void>> deleteNotification(String notificationId) async {
+  Future<Either<Failure, void>> deleteNotification(
+      String notificationId) async {
     try {
       // Delete from Appwrite database
       AppLogger.i('Deleted notification: $notificationId');

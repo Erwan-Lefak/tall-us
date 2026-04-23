@@ -27,7 +27,7 @@ class SwipeRemoteDataSource {
         documentId: ID.unique(),
         data: {
           'fromUserId': swiperId, // Adapter pour la collection existante
-          'toUserId': targetId,   // Adapter pour la collection existante
+          'toUserId': targetId, // Adapter pour la collection existante
           'action': action,
           'createdAt': DateTime.now().toIso8601String(),
         },
@@ -78,7 +78,8 @@ class SwipeRemoteDataSource {
         final profile = UserProfileModel.fromJson(doc.data).toEntity();
 
         // Apply filters that can't be done in Appwrite query
-        if (_matchesFilters(profile, minAge, maxAge, minHeight, maxHeight, onlyShowVerified)) {
+        if (_matchesFilters(
+            profile, minAge, maxAge, minHeight, maxHeight, onlyShowVerified)) {
           profiles.add(profile);
         }
       }
@@ -115,7 +116,8 @@ class SwipeRemoteDataSource {
   }
 
   /// Get user's recent swipes (for rewind functionality)
-  Future<List<Map<String, dynamic>>> getRecentSwipes(String userId, {int limit = 10}) async {
+  Future<List<Map<String, dynamic>>> getRecentSwipes(String userId,
+      {int limit = 10}) async {
     try {
       AppLogger.i('Fetching recent swipes for user: $userId');
 

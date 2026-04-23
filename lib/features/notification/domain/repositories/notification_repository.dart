@@ -35,7 +35,8 @@ abstract class NotificationRepository {
   });
 
   /// Get user's notification preferences
-  Future<Either<Failure, NotificationPreferences>> getPreferences(String userId);
+  Future<Either<Failure, NotificationPreferences>> getPreferences(
+      String userId);
 
   /// Update notification preferences
   Future<Either<Failure, void>> updatePreferences({

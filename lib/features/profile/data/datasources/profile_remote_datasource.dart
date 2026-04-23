@@ -98,7 +98,8 @@ class ProfileRemoteDataSource {
       AppLogger.i('Uploading photo for user: $userId');
 
       final file = File(filePath);
-      final fileName = '${userId}_${DateTime.now().millisecondsSinceEpoch}_${file.path.split('/').last}';
+      final fileName =
+          '${userId}_${DateTime.now().millisecondsSinceEpoch}_${file.path.split('/').last}';
 
       final fileData = await file.readAsBytes();
       final inputFile = InputFile.fromBytes(
@@ -117,7 +118,8 @@ class ProfileRemoteDataSource {
       );
 
       // Construct file URL
-      final fileUrl = '${AppwriteConfig.endpoint}/storage/buckets/${AppwriteConfig.photosBucketId}/files/${result.$id}/view?project=${AppwriteConfig.projectId}';
+      final fileUrl =
+          '${AppwriteConfig.endpoint}/storage/buckets/${AppwriteConfig.photosBucketId}/files/${result.$id}/view?project=${AppwriteConfig.projectId}';
 
       AppLogger.i('Photo uploaded successfully: $fileUrl');
       return fileUrl;
@@ -199,7 +201,8 @@ class ProfileRemoteDataSource {
   Future<Map<String, dynamic>> updateDiscoveryPreferences(
       DiscoveryPreferencesEntity preferences) async {
     try {
-      AppLogger.i('Updating discovery preferences for user: ${preferences.userId}');
+      AppLogger.i(
+          'Updating discovery preferences for user: ${preferences.userId}');
 
       final data = {
         'userId': preferences.userId,

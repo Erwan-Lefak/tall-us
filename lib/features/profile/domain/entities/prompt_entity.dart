@@ -1,5 +1,37 @@
 import 'package:equatable/equatable.dart';
 
+/// Entity representing a user's answer to a prompt
+class UserPrompt extends Equatable {
+  final String promptId;
+  final String promptText;
+  final String answer;
+  final int displayOrder; // Order to display on profile
+
+  const UserPrompt({
+    required this.promptId,
+    required this.promptText,
+    required this.answer,
+    this.displayOrder = 0,
+  });
+
+  UserPrompt copyWith({
+    String? promptId,
+    String? promptText,
+    String? answer,
+    int? displayOrder,
+  }) {
+    return UserPrompt(
+      promptId: promptId ?? this.promptId,
+      promptText: promptText ?? this.promptText,
+      answer: answer ?? this.answer,
+      displayOrder: displayOrder ?? this.displayOrder,
+    );
+  }
+
+  @override
+  List<Object?> get props => [promptId, promptText, answer, displayOrder];
+}
+
 /// Entity representing a tall-specific conversation prompt
 class PromptEntity extends Equatable {
   final String id;

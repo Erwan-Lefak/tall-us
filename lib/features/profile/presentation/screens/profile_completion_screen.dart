@@ -202,7 +202,8 @@ class _ProfileCompletionScreenState
                                   child: Container(
                                     padding: const EdgeInsets.all(8),
                                     decoration: BoxDecoration(
-                                      color: Colors.black.withValues(alpha: 0.5),
+                                      color:
+                                          Colors.black.withValues(alpha: 0.5),
                                       shape: BoxShape.circle,
                                     ),
                                     child: const Icon(
@@ -341,27 +342,38 @@ class _ProfileCompletionScreenState
                   child: Container(
                     padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
-                      color: isSelected ? AppTheme.bordeaux.withValues(alpha: 0.1) : Colors.white,
+                      color: isSelected
+                          ? AppTheme.bordeaux.withValues(alpha: 0.1)
+                          : Colors.white,
                       borderRadius: BorderRadius.circular(16),
                       border: Border.all(
-                        color: isSelected ? AppTheme.bordeaux : AppTheme.navy.withValues(alpha: 0.2),
+                        color: isSelected
+                            ? AppTheme.bordeaux
+                            : AppTheme.navy.withValues(alpha: 0.2),
                         width: isSelected ? 2 : 1,
                       ),
                     ),
                     child: Row(
                       children: [
                         Icon(
-                          isSelected ? Icons.check_circle : Icons.radio_button_unchecked,
-                          color: isSelected ? AppTheme.bordeaux : AppTheme.navy.withValues(alpha: 0.5),
+                          isSelected
+                              ? Icons.check_circle
+                              : Icons.radio_button_unchecked,
+                          color: isSelected
+                              ? AppTheme.bordeaux
+                              : AppTheme.navy.withValues(alpha: 0.5),
                         ),
                         const SizedBox(width: 16),
                         Expanded(
                           child: Text(
                             prompt.text,
-                            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                  color: AppTheme.navy,
-                                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-                                ),
+                            style:
+                                Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                      color: AppTheme.navy,
+                                      fontWeight: isSelected
+                                          ? FontWeight.w600
+                                          : FontWeight.normal,
+                                    ),
                           ),
                         ),
                       ],

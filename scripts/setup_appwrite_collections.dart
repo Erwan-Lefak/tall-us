@@ -49,7 +49,12 @@ void main() async {
     final swipeAttributes = [
       {'name': 'swiperId', 'type': 'string', 'size': 128, 'required': true},
       {'name': 'targetId', 'type': 'string', 'size': 128, 'required': true},
-      {'name': 'action', 'type': 'enum', 'elements': ['like', 'pass', 'superLike'], 'required': true},
+      {
+        'name': 'action',
+        'type': 'enum',
+        'elements': ['like', 'pass', 'superLike'],
+        'required': true
+      },
       {'name': 'createdAt', 'type': 'datetime', 'required': true},
     ];
 
@@ -69,7 +74,8 @@ void main() async {
         if (e.code == 409) {
           print('   ⚠️  Attribute "${attr['name']}" already exists');
         } else {
-          print('   ⚠️  Error creating attribute "${attr['name']}": ${e.message}');
+          print(
+              '   ⚠️  Error creating attribute "${attr['name']}": ${e.message}');
         }
       }
     }
@@ -103,7 +109,8 @@ void main() async {
         collectionId: 'matches',
         name: 'Matches',
         permissions: [
-          Permission.read(Role.users()), // Only authenticated users can read matches
+          Permission.read(
+              Role.users()), // Only authenticated users can read matches
         ],
       );
       print('   ✅ Matches collection created');
@@ -142,7 +149,8 @@ void main() async {
         if (e.code == 409) {
           print('   ⚠️  Attribute "${attr['name']}" already exists');
         } else {
-          print('   ⚠️  Error creating attribute "${attr['name']}": ${e.message}');
+          print(
+              '   ⚠️  Error creating attribute "${attr['name']}": ${e.message}');
         }
       }
     }
@@ -170,7 +178,6 @@ void main() async {
     print('1. Create profiles collection if not exists');
     print('2. Add some test profiles');
     print('3. Test swipes and matching');
-
   } on AppwriteException catch (e) {
     print('\n❌ Appwrite Error: ${e.message}');
     print('   Code: ${e.code}');

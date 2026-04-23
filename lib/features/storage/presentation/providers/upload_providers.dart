@@ -5,13 +5,15 @@ import 'package:tall_us/features/storage/data/datasources/storage_remote_datasou
 import 'package:tall_us/features/storage/presentation/providers/upload_notifier.dart';
 
 /// Provider for StorageRemoteDataSource
-final storageRemoteDataSourceProvider = Provider<StorageRemoteDataSource>((ref) {
+final storageRemoteDataSourceProvider =
+    Provider<StorageRemoteDataSource>((ref) {
   final storage = Storage(ref.read(appwriteClientProvider));
   return StorageRemoteDataSource(storage: storage);
 });
 
 /// Provider for UploadNotifier
-final uploadNotifierProvider = StateNotifierProvider<UploadNotifier, UploadState>((ref) {
+final uploadNotifierProvider =
+    StateNotifierProvider<UploadNotifier, UploadState>((ref) {
   final dataSource = ref.read(storageRemoteDataSourceProvider);
   return UploadNotifier(dataSource);
 });

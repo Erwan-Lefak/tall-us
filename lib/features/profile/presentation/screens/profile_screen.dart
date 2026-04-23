@@ -1,8 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:tall_us/core/theme/app_theme.dart';
+import 'package:tall_us/core/widgets/skeleton/skeleton_loading.dart';
 import 'package:tall_us/features/profile/domain/entities/user_profile_entity.dart';
 import 'package:tall_us/features/profile/domain/entities/discovery_preferences_entity.dart';
+import 'package:tall_us/features/profile/domain/entities/prompt_entity.dart';
+import 'package:tall_us/features/profile/presentation/widgets/prompt_selector_widget.dart';
+import 'package:tall_us/features/profile/presentation/widgets/interests_selector_widget.dart';
+import 'package:tall_us/features/profile/presentation/widgets/photo_gallery_editor.dart';
+import 'package:tall_us/features/settings/presentation/screens/settings_screen.dart';
 
 /// Main profile screen with view and edit modes
 class ProfileScreen extends ConsumerStatefulWidget {
@@ -18,6 +24,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   // Dummy data - will be replaced with provider
   UserProfileEntity? _profile;
   DiscoveryPreferencesEntity? _preferences;
+
+  // NEW: Prompts and interests
+  List<UserPrompt> _prompts = [];
+  List<String> _interests = [];
 
   @override
   void initState() {
@@ -37,11 +47,29 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         city: 'Paris',
         country: 'France',
         gender: 'homme',
-        bio: 'Passionné de voyages et de randonnée. Je cherche une partenaire pour partager mes aventures !',
+        bio:
+            'Passionné de voyages et de randonnée. Je cherche une partenaire pour partager mes aventures !',
         photoUrls: [
           'https://via.placeholder.com/400x600',
           'https://via.placeholder.com/400x601',
           'https://via.placeholder.com/400x602',
+        ],
+        // NEW: Sample prompts
+        prompts: const [
+          UserPrompt(
+            promptId: 'convo_bucket_list',
+            promptText: 'Sur ma bucket list cette année :',
+            answer: 'Faire un tour du monde et visiter le Japon !',
+            displayOrder: 0,
+          ),
+        ],
+        // NEW: Sample interests
+        interests: [
+          'Voyage',
+          'Randonnée',
+          'Photographie',
+          'Fitness',
+          'Cuisine'
         ],
       );
       _preferences = DiscoveryPreferencesEntity(
@@ -63,9 +91,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     if (_profile == null) {
       return Scaffold(
         body: Center(
-          child: CircularProgressIndicator(
-            valueColor: AlwaysStoppedAnimation<Color>(AppTheme.bordeaux),
-          ),
+          child: ProfileCardSkeleton(),
         ),
       );
     }
@@ -104,6 +130,20 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         centerTitle: true,
       ),
       actions: [
+        // Settings button
+        if (!_isEditing)
+          IconButton(
+            icon: const Icon(Icons.settings_outlined),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const SettingsScreen(),
+                ),
+              );
+            },
+          ),
+        // Edit button
         if (!_isEditing)
           IconButton(
             icon: Icon(
@@ -156,8 +196,18 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
 
           const SizedBox(height: 24),
 
-          // Prompts
+          // Prompts (UPDATED - Now functional)
           _buildPromptsSection(),
+
+          const SizedBox(height: 24),
+
+          // Interests (NEW)
+          _buildInterestsSection(),
+
+          const SizedBox(height: 24),
+
+          // Work & Education (NEW)
+          _buildWorkEducationSection(),
 
           const SizedBox(height: 24),
 
@@ -205,8 +255,18 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
 
           const SizedBox(height: 24),
 
-          // Prompts edit
+          // Prompts edit (UPDATED)
           _buildPromptsEditSection(),
+
+          const SizedBox(height: 24),
+
+          // Interests edit (NEW)
+          _buildInterestsEditSection(),
+
+          const SizedBox(height: 24),
+
+          // Work & Education edit (NEW)
+          _buildWorkEducationEditSection(),
 
           const SizedBox(height: 48),
         ],
@@ -260,7 +320,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     errorBuilder: (context, error, stackTrace) {
                       return Container(
                         color: Colors.grey[300],
-                        child: const Icon(Icons.person, size: 50, color: Colors.grey),
+                        child: const Icon(Icons.person,
+                            size: 50, color: Colors.grey),
                       );
                     },
                   ),
@@ -274,145 +335,19 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   }
 
   Widget _buildPhotosEditSection() {
-    final photos = _profile!.photoUrls;
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16),
-          child: Text(
-            'Mes photos',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: AppTheme.navy,
-            ),
-          ),
-        ),
-        const SizedBox(height: 12),
-        SizedBox(
-          height: 200,
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            itemCount: photos.length + 1,
-            itemBuilder: (context, index) {
-              if (index == photos.length) {
-                // Add photo button
-                return Container(
-                  width: 150,
-                  margin: const EdgeInsets.only(right: 12),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(
-                      color: AppTheme.bordeaux.withValues(alpha: 0.5),
-                      width: 2,
-                    ),
-                  ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(16),
-                    child: Material(
-                      color: Colors.transparent,
-                      child: InkWell(
-                        onTap: () {
-                          // TODO: Add photo
-                        },
-                        child: const Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.add_circle_outline,
-                              size: 48,
-                              color: AppTheme.bordeaux,
-                            ),
-                            SizedBox(height: 8),
-                            Text(
-                              'Ajouter',
-                              style: TextStyle(
-                                color: AppTheme.navy,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                );
-              }
-
-              return Container(
-                width: 150,
-                margin: const EdgeInsets.only(right: 12),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(16),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.1),
-                      blurRadius: 8,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: Stack(
-                  children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(16),
-                      child: Image.network(
-                        photos[index],
-                        fit: BoxFit.cover,
-                        width: double.infinity,
-                        height: double.infinity,
-                        errorBuilder: (context, error, stackTrace) {
-                          return Container(
-                            color: Colors.grey[300],
-                            child: const Icon(Icons.person, size: 50, color: Colors.grey),
-                          );
-                        },
-                      ),
-                    ),
-                    Positioned(
-                      top: 8,
-                      right: 8,
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          shape: BoxShape.circle,
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.2),
-                              blurRadius: 4,
-                            ),
-                          ],
-                        ),
-                        child: IconButton(
-                          icon: const Icon(Icons.delete, color: AppTheme.bordeaux, size: 20),
-                          onPressed: () {
-                            // TODO: Remove photo
-                          },
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              );
-            },
-          ),
-        ),
-        const SizedBox(height: 8),
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16),
-          child: Text(
-            'Glissez pour réorganiser, appuyez sur X pour supprimer',
-            style: TextStyle(
-              fontSize: 12,
-              color: AppTheme.navy,
-              fontStyle: FontStyle.italic,
-            ),
-          ),
-        ),
-      ],
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: PhotoGalleryEditor(
+        photoUrls: _profile!.photoUrls,
+        onPhotosUpdated: (photos) {
+          setState(() {
+            _profile = _profile!.copyWith(photoUrls: photos);
+          });
+        },
+        maxPhotos: 6,
+        allowReorder: true,
+        allowDelete: true,
+      ),
     );
   }
 
@@ -615,13 +550,295 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   }
 
   Widget _buildPromptsSection() {
-    // TODO: Implement prompts when the entity supports it
-    return const SizedBox.shrink();
+    if (_profile!.prompts.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Mes Prompts',
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: AppTheme.navy,
+            ),
+          ),
+          const SizedBox(height: 12),
+          ...List.generate(_profile!.prompts.length, (index) {
+            final prompt = _profile!.prompts[index];
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 12),
+              child: Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      AppTheme.bordeaux.withValues(alpha: 0.05),
+                      AppTheme.navy.withValues(alpha: 0.02),
+                    ],
+                  ),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: AppTheme.bordeaux.withValues(alpha: 0.2),
+                    width: 1,
+                  ),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      prompt.promptText,
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: AppTheme.navy,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      prompt.answer,
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: AppTheme.navy.withValues(alpha: 0.8),
+                        height: 1.5,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildInterestsSection() {
+    if (_profile!.interests.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Mes Intérêts',
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: AppTheme.navy,
+            ),
+          ),
+          const SizedBox(height: 12),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: _profile!.interests.map((interest) {
+              return Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                decoration: BoxDecoration(
+                  color: AppTheme.bordeaux,
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppTheme.bordeaux.withValues(alpha: 0.3),
+                      blurRadius: 4,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: Text(
+                  interest,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              );
+            }).toList(),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildWorkEducationSection() {
+    final hasWork = _profile!.jobTitle != null || _profile!.company != null;
+    final hasEducation = _profile!.school != null;
+
+    if (!hasWork && !hasEducation) {
+      return const SizedBox.shrink();
+    }
+
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Travail & Études',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: AppTheme.navy,
+            ),
+          ),
+          const SizedBox(height: 12),
+          if (hasWork) ...[
+            Row(
+              children: [
+                const Icon(Icons.work, color: AppTheme.bordeaux, size: 20),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    '${_profile!.jobTitle ?? ''}${_profile!.company != null ? ' chez ${_profile!.company}' : ''}',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: AppTheme.navy.withValues(alpha: 0.8),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+          if (hasEducation) ...[
+            if (hasWork) const SizedBox(height: 8),
+            Row(
+              children: [
+                const Icon(Icons.school, color: AppTheme.bordeaux, size: 20),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    _profile!.school ?? '',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: AppTheme.navy.withValues(alpha: 0.8),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ],
+      ),
+    );
   }
 
   Widget _buildPromptsEditSection() {
-    // TODO: Implement prompts when the entity supports it
-    return const SizedBox.shrink();
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16),
+      child: PromptSelectorWidget(
+        existingPrompts: _profile!.prompts,
+        onPromptsUpdated: (prompts) {
+          setState(() {
+            _profile = _profile!.copyWith(prompts: prompts);
+          });
+        },
+        maxPrompts: 3,
+      ),
+    );
+  }
+
+  Widget _buildInterestsEditSection() {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16),
+      child: InterestsSelectorWidget(
+        selectedInterests: _profile!.interests,
+        onInterestsUpdated: (interests) {
+          setState(() {
+            _profile = _profile!.copyWith(interests: interests);
+          });
+        },
+        maxInterests: 5,
+      ),
+    );
+  }
+
+  Widget _buildWorkEducationEditSection() {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Travail & Études',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: AppTheme.navy,
+            ),
+          ),
+          const SizedBox(height: 16),
+          TextFormField(
+            initialValue: _profile!.jobTitle,
+            decoration: const InputDecoration(
+              labelText: 'Titre du poste',
+              prefixIcon: Icon(Icons.work),
+              border: OutlineInputBorder(),
+            ),
+            onChanged: (value) {
+              _profile = _profile!.copyWith(jobTitle: value);
+            },
+          ),
+          const SizedBox(height: 16),
+          TextFormField(
+            initialValue: _profile!.company,
+            decoration: const InputDecoration(
+              labelText: 'Entreprise',
+              prefixIcon: Icon(Icons.business),
+              border: OutlineInputBorder(),
+            ),
+            onChanged: (value) {
+              _profile = _profile!.copyWith(company: value);
+            },
+          ),
+          const SizedBox(height: 16),
+          TextFormField(
+            initialValue: _profile!.school,
+            decoration: const InputDecoration(
+              labelText: 'École / Université',
+              prefixIcon: Icon(Icons.school),
+              border: OutlineInputBorder(),
+            ),
+            onChanged: (value) {
+              _profile = _profile!.copyWith(school: value);
+            },
+          ),
+        ],
+      ),
+    );
   }
 
   Widget _buildPreferencesButton() {

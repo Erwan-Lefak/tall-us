@@ -10,7 +10,8 @@ class GetDiscoveryPreferencesUseCase {
   GetDiscoveryPreferencesUseCase(this.repository);
 
   /// Get discovery preferences by user ID
-  Future<Either<Failure, DiscoveryPreferencesEntity>> call(String userId) async {
+  Future<Either<Failure, DiscoveryPreferencesEntity>> call(
+      String userId) async {
     return await repository.getDiscoveryPreferences(userId);
   }
 }

@@ -278,16 +278,18 @@ class ProfileRepositoryImpl implements ProfileRepository {
   }
 
   @override
-  Future<Either<Failure, DiscoveryPreferencesEntity>> updateDiscoveryPreferences(
-      DiscoveryPreferencesEntity preferences) async {
+  Future<Either<Failure, DiscoveryPreferencesEntity>>
+      updateDiscoveryPreferences(DiscoveryPreferencesEntity preferences) async {
     try {
-      AppLogger.i('Updating discovery preferences for user: ${preferences.userId}');
+      AppLogger.i(
+          'Updating discovery preferences for user: ${preferences.userId}');
       await remoteDataSource.updateDiscoveryPreferences(preferences);
       return Right(preferences);
     } on AppwriteException catch (e) {
       AppLogger.e('Failed to update discovery preferences', error: e);
       return Left(ServerFailure(
-        message: e.message?.toString() ?? 'Failed to update discovery preferences',
+        message:
+            e.message?.toString() ?? 'Failed to update discovery preferences',
         code: e.code?.toString() ?? 'UPDATE_PREFERENCES_ERROR',
       ));
     } catch (e) {

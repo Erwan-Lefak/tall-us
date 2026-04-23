@@ -248,10 +248,11 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                         onPressed: _isSending ? null : _navigateBackToLogin,
                         child: Text(
                           'Se connecter',
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                color: AppTheme.bordeaux,
-                                fontWeight: FontWeight.bold,
-                              ),
+                          style:
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    color: AppTheme.bordeaux,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                         ),
                       ),
                     ],

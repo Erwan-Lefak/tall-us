@@ -8,7 +8,8 @@ class UpdatePreferencesUseCase {
 
   UpdatePreferencesUseCase(this.repository);
 
-  Future<Either<Failure, DiscoveryPreferencesEntity>> call(DiscoveryPreferencesEntity preferences) async {
+  Future<Either<Failure, DiscoveryPreferencesEntity>> call(
+      DiscoveryPreferencesEntity preferences) async {
     return await repository.updateDiscoveryPreferences(preferences);
   }
 }

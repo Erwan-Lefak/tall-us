@@ -25,7 +25,8 @@ class MatchRepositoryImpl implements MatchRepository {
           id: data['\$id'] ?? data['id'] ?? '',
           user1Id: data['user1Id'] ?? '',
           user2Id: data['user2Id'] ?? '',
-          createdAt: DateTime.parse(data['createdAt'] ?? DateTime.now().toIso8601String()),
+          createdAt: DateTime.parse(
+              data['createdAt'] ?? DateTime.now().toIso8601String()),
           lastMessageId: data['lastMessageId'],
           lastMessageAt: data['lastMessageAt'] != null
               ? DateTime.parse(data['lastMessageAt'])
@@ -48,7 +49,8 @@ class MatchRepositoryImpl implements MatchRepository {
   }
 
   @override
-  Future<Either<Failure, List<MatchEntity>>> getUnreadMatches(String userId) async {
+  Future<Either<Failure, List<MatchEntity>>> getUnreadMatches(
+      String userId) async {
     try {
       AppLogger.i('Getting unread matches for user: $userId');
       final allMatchesResult = await getMatches(userId);
@@ -56,7 +58,8 @@ class MatchRepositoryImpl implements MatchRepository {
       return allMatchesResult.fold(
         (failure) => Left(failure),
         (matches) {
-          final unreadMatches = matches.where((match) => !match.isRead).toList();
+          final unreadMatches =
+              matches.where((match) => !match.isRead).toList();
           return Right(unreadMatches);
         },
       );

@@ -8,7 +8,8 @@ part 'discovery_state.freezed.dart';
 class DiscoveryState with _$DiscoveryState {
   const factory DiscoveryState.initial() = _Initial;
   const factory DiscoveryState.loading() = _Loading;
-  const factory DiscoveryState.loaded(List<UserProfileEntity> profiles) = _Loaded;
+  const factory DiscoveryState.loaded(List<UserProfileEntity> profiles) =
+      _Loaded;
   const factory DiscoveryState.error(String message) = _Error;
   const factory DiscoveryState.noMoreProfiles() = _NoMoreProfiles;
 }

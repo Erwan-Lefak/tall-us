@@ -25,7 +25,8 @@ class FirebaseMessagingService {
       badge: true,
       sound: true,
     );
-    AppLogger.i('Firebase Messaging permission: ${settings.authorizationStatus}');
+    AppLogger.i(
+        'Firebase Messaging permission: ${settings.authorizationStatus}');
 
     // Initialize local notifications
     await _initializeLocalNotifications();
@@ -50,7 +51,8 @@ class FirebaseMessagingService {
       requestSoundPermission: true,
     );
 
-    final InitializationSettings initializationSettings = InitializationSettings(
+    final InitializationSettings initializationSettings =
+        InitializationSettings(
       android: initializationSettingsAndroid,
       iOS: initializationSettingsDarwin,
     );

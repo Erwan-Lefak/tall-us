@@ -35,7 +35,8 @@ class _PhotoUploadWidgetState extends ConsumerState<PhotoUploadWidget> {
 
   Future<void> _pickImage(ImageSource source) async {
     if (_photos.length >= widget.maxPhotos) {
-      _showSnackBar('Maximum ${widget.maxPhotos} photos allowed', isError: true);
+      _showSnackBar('Maximum ${widget.maxPhotos} photos allowed',
+          isError: true);
       return;
     }
 
@@ -55,9 +56,9 @@ class _PhotoUploadWidgetState extends ConsumerState<PhotoUploadWidget> {
         // Upload photo
         final file = File(pickedFile.path);
         await ref.read(uploadNotifierProvider.notifier).uploadPhoto(
-          file: file,
-          userId: 'current_user_id', // TODO: Get from auth
-        );
+              file: file,
+              userId: 'current_user_id', // TODO: Get from auth
+            );
 
         // Listen to upload state
         ref.listen<UploadState>(uploadNotifierProvider, (previous, next) {
@@ -104,7 +105,8 @@ class _PhotoUploadWidgetState extends ConsumerState<PhotoUploadWidget> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
-        backgroundColor: isError ? AppTheme.navy.withValues(alpha: 0.8) : AppTheme.bordeaux,
+        backgroundColor:
+            isError ? AppTheme.navy.withValues(alpha: 0.8) : AppTheme.bordeaux,
         behavior: SnackBarBehavior.floating,
       ),
     );
@@ -127,7 +129,8 @@ class _PhotoUploadWidgetState extends ConsumerState<PhotoUploadWidget> {
           mainAxisSize: MainAxisSize.min,
           children: [
             ListTile(
-              leading: const Icon(Icons.photo_library, color: AppTheme.bordeaux),
+              leading:
+                  const Icon(Icons.photo_library, color: AppTheme.bordeaux),
               title: const Text(
                 'Choose from Gallery',
                 style: TextStyle(color: AppTheme.navy),
@@ -231,14 +234,17 @@ class _PhotoUploadWidgetState extends ConsumerState<PhotoUploadWidget> {
                   height: 30,
                   child: CircularProgressIndicator(
                     strokeWidth: 3,
-                    valueColor: const AlwaysStoppedAnimation<Color>(AppTheme.bordeaux),
+                    valueColor:
+                        const AlwaysStoppedAnimation<Color>(AppTheme.bordeaux),
                   ),
                 ),
               )
             : Icon(
                 Icons.add,
                 size: 40,
-                color: isEnabled ? AppTheme.bordeaux.withValues(alpha: 0.5) : Colors.grey.shade400,
+                color: isEnabled
+                    ? AppTheme.bordeaux.withValues(alpha: 0.5)
+                    : Colors.grey.shade400,
               ),
       ),
     );
@@ -263,7 +269,8 @@ class _PhotoUploadWidgetState extends ConsumerState<PhotoUploadWidget> {
               errorBuilder: (context, error, stackTrace) {
                 return Container(
                   color: Colors.grey.shade300,
-                  child: const Icon(Icons.broken_image, size: 40, color: Colors.grey),
+                  child: const Icon(Icons.broken_image,
+                      size: 40, color: Colors.grey),
                 );
               },
               loadingBuilder: (context, child, loadingProgress) {
@@ -273,9 +280,11 @@ class _PhotoUploadWidgetState extends ConsumerState<PhotoUploadWidget> {
                   child: Center(
                     child: CircularProgressIndicator(
                       value: loadingProgress.expectedTotalBytes != null
-                          ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
+                          ? loadingProgress.cumulativeBytesLoaded /
+                              loadingProgress.expectedTotalBytes!
                           : null,
-                      valueColor: const AlwaysStoppedAnimation<Color>(AppTheme.bordeaux),
+                      valueColor: const AlwaysStoppedAnimation<Color>(
+                          AppTheme.bordeaux),
                     ),
                   ),
                 );

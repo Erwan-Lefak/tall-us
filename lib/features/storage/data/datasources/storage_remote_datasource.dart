@@ -28,7 +28,8 @@ class StorageRemoteDataSource {
       final fileResponse = await _storage.createFile(
         bucketId: bucketId,
         fileId: ID.unique(),
-        file: InputFile.fromPath(path: file.path, filename: '$fileName.$extension'),
+        file: InputFile.fromPath(
+            path: file.path, filename: '$fileName.$extension'),
         permissions: [
           Permission.read(Role.user(userId)),
           // Public read for profile photos
