@@ -91,7 +91,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     if (_profile == null) {
       return Scaffold(
         body: Center(
-          child: ProfileCardSkeleton(),
+          child: SkeletonProfileCard(),
         ),
       );
     }

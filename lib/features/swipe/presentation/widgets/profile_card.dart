@@ -171,16 +171,14 @@ class _ProfileCardState extends State<ProfileCard> {
                                 fit: BoxFit.cover,
                                 width: double.infinity,
                                 height: double.infinity,
-                                errorWidget: (context, url, error) {
-                                  return Container(
-                                    color: AppTheme.navy.withValues(alpha: 0.1),
-                                    child: const Icon(
-                                      Icons.person,
-                                      size: 100,
-                                      color: AppTheme.navy,
-                                    ),
-                                  );
-                                },
+                                errorWidget: Container(
+                                  color: AppTheme.navy.withValues(alpha: 0.1),
+                                  child: const Icon(
+                                    Icons.person,
+                                    size: 100,
+                                    color: AppTheme.navy,
+                                  ),
+                                ),
                               )
                             : Container(
                                 color: AppTheme.navy.withValues(alpha: 0.1),

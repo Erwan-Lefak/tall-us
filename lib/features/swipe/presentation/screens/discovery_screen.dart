@@ -7,9 +7,9 @@ import 'package:tall_us/core/widgets/skeleton/skeleton_loading.dart';
 import 'package:tall_us/core/widgets/interactive/premium_button.dart';
 import 'package:tall_us/features/auth/presentation/providers/auth_providers.dart';
 import 'package:tall_us/features/discovery/presentation/providers/discovery_providers.dart';
-import 'package:tall_us/features/discovery/presentation/providers/discovery_extended_providers.dart';
-import 'package:tall_us/features/discovery/presentation/screens/top_picks_screen.dart';
-import 'package:tall_us/features/discovery/presentation/screens/who_likes_you_screen.dart';
+// import 'package:tall_us/features/discovery/presentation/providers/discovery_extended_providers.dart'; // Temporarily disabled
+// import 'package:tall_us/features/discovery/presentation/screens/top_picks_screen.dart'; // Temporarily disabled
+// import 'package:tall_us/features/discovery/presentation/screens/who_likes_you_screen.dart'; // Temporarily disabled
 import 'package:tall_us/features/match/domain/entities/match_entity.dart';
 import 'package:tall_us/features/match/presentation/widgets/heart_explosion.dart';
 import 'package:tall_us/features/profile/domain/entities/user_profile_entity.dart';
@@ -144,7 +144,7 @@ class DiscoveryScreen extends ConsumerWidget {
               _buildHeader(ref),
 
               // Premium Features Banner
-              _buildPremiumFeaturesBanner(context, ref),
+              // _buildPremiumFeaturesBanner(context, ref), // Temporarily disabled
 
               // Cards stack
               Expanded(
@@ -345,7 +345,7 @@ class DiscoveryScreen extends ConsumerWidget {
 
   Widget _buildLoadingIndicator() {
     return const Center(
-      child: ProfileCardSkeleton(),
+      child: SkeletonProfileCard(),
     );
   }
 
@@ -496,50 +496,50 @@ class _ActionButton extends StatelessWidget {
     );
   }
 
-  Widget _buildPremiumFeaturesBanner(BuildContext context, WidgetRef ref) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Row(
-        children: [
-          // Top Picks Button
-          Expanded(
-            child: _buildFeatureButton(
-              context,
-              icon: Icons.star_outlined,
-              label: 'Top Picks',
-              color: const Color(0xFFFFD700),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const TopPicksScreen(),
-                  ),
-                );
-              },
-            ),
-          ),
-          const SizedBox(width: 12),
-          // Who Likes You Button
-          Expanded(
-            child: _buildFeatureButton(
-              context,
-              icon: Icons.favorite_outline,
-              label: 'Qui m\'a aimé',
-              color: const Color(0xFFE5E4E2),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const WhoLikesYouScreen(),
-                  ),
-                );
-              },
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+  // Widget _buildPremiumFeaturesBanner(BuildContext context, WidgetRef ref) {
+  //   return Padding(
+  //     padding: const EdgeInsets.symmetric(horizontal: 16),
+  //     child: Row(
+  //       children: [
+  //         // Top Picks Button
+  //         Expanded(
+  //           child: _buildFeatureButton(
+  //             context,
+  //             icon: Icons.star_outlined,
+  //             label: 'Top Picks',
+  //             color: const Color(0xFFFFD700),
+  //             onTap: () {
+  //               Navigator.push(
+  //                 context,
+  //                 MaterialPageRoute(
+  //                   builder: (context) => const TopPicksScreen(),
+  //                 ),
+  //               );
+  //             },
+  //           ),
+  //         ),
+  //         const SizedBox(width: 12),
+  //         // Who Likes You Button
+  //         Expanded(
+  //           child: _buildFeatureButton(
+  //             context,
+  //             icon: Icons.favorite_outline,
+  //             label: 'Qui m\'a aimé',
+  //             color: const Color(0xFFE5E4E2),
+  //             onTap: () {
+  //               Navigator.push(
+  //                 context,
+  //                 MaterialPageRoute(
+  //                   builder: (context) => const WhoLikesYouScreen(),
+  //                 ),
+  //               );
+  //             },
+  //           ),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 
   Widget _buildFeatureButton(
     BuildContext context, {

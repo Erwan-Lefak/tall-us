@@ -1,12 +1,11 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:tall_us/core/appwrite/appwrite_config.dart';
+import 'package:tall_us/core/appwrite/appwrite_client.dart';
 import 'package:tall_us/features/social/data/repositories/social_repository_impl.dart';
 import 'package:tall_us/features/social/domain/entities/social_entities.dart';
 import 'package:tall_us/features/social/domain/repositories/social_repository.dart';
 
 part 'social_providers.freezed.dart';
-part 'social_providers.g.dart';
 
 // ==================== Repository Provider ====================
 
@@ -70,19 +69,10 @@ final eventsProvider =
 
 @freezed
 class EventsState with _$EventsState {
-  const factory EventsState({
-    required List<SocialEvent> events,
-    @Default(true) bool isLoading,
-    String? error,
-  }) = _EventsState;
-
-  const factory EventsState.initial() = _EventsState;
-
-  const factory EventsState.loading() = _EventsState;
-
-  const factory EventsState.loaded(List<SocialEvent> events) = _EventsState;
-
-  const factory EventsState.error(String message) = _EventsState;
+  const factory EventsState.initial() = _EventsStateInitial;
+  const factory EventsState.loading() = _EventsStateLoading;
+  const factory EventsState.loaded(List<SocialEvent> events) = _EventsStateLoaded;
+  const factory EventsState.error(String message) = _EventsStateError;
 }
 
 // ==================== Groups Providers ====================
@@ -134,19 +124,10 @@ final groupsProvider =
 
 @freezed
 class GroupsState with _$GroupsState {
-  const factory GroupsState({
-    required List<SocialGroup> groups,
-    @Default(true) bool isLoading,
-    String? error,
-  }) = _GroupsState;
-
-  const factory GroupsState.initial() = _GroupsState;
-
-  const factory GroupsState.loading() = _GroupsState;
-
-  const factory GroupsState.loaded(List<SocialGroup> groups) = _GroupsState;
-
-  const factory GroupsState.error(String message) = _GroupsState;
+  const factory GroupsState.initial() = _GroupsStateInitial;
+  const factory GroupsState.loading() = _GroupsStateLoading;
+  const factory GroupsState.loaded(List<SocialGroup> groups) = _GroupsStateLoaded;
+  const factory GroupsState.error(String message) = _GroupsStateError;
 }
 
 // ==================== Friends of Friends Providers ====================
@@ -180,21 +161,12 @@ final friendsOfFriendsProvider =
 
 @freezed
 class FriendsOfFriendsState with _$FriendsOfFriendsState {
-  const factory FriendsOfFriendsState({
-    required List<Map<String, dynamic>> friendsOfFriends,
-    @Default(true) bool isLoading,
-    String? error,
-  }) = _FriendsOfFriendsState;
-
-  const factory FriendsOfFriendsState.initial() = _FriendsOfFriendsState;
-
-  const factory FriendsOfFriendsState.loading() = _FriendsOfFriendsState;
-
+  const factory FriendsOfFriendsState.initial() = _FriendsOfFriendsStateInitial;
+  const factory FriendsOfFriendsState.loading() = _FriendsOfFriendsStateLoading;
   const factory FriendsOfFriendsState.loaded(
-      List<Map<String, dynamic>> friendsOfFriends) = _FriendsOfFriendsState;
-
+      List<Map<String, dynamic>> friendsOfFriends) = _FriendsOfFriendsStateLoaded;
   const factory FriendsOfFriendsState.error(String message) =
-      _FriendsOfFriendsState;
+      _FriendsOfFriendsStateError;
 }
 
 // ==================== Double Date Providers ====================
@@ -249,20 +221,11 @@ final doubleDateProvider =
 
 @freezed
 class DoubleDateState with _$DoubleDateState {
-  const factory DoubleDateState({
-    required List<String> selectedFriends,
-    @Default(false) bool isCreating,
-    @Default(false) bool isCreated,
-  }) = _DoubleDateState;
-
-  const factory DoubleDateState.initial() = _DoubleDateState;
-
+  const factory DoubleDateState.initial() = _DoubleDateStateInitial;
   const factory DoubleDateState.selecting(List<String> friends) =
-      _DoubleDateState;
-
+      _DoubleDateStateSelecting;
   const factory DoubleDateState.creating(List<String> friends) =
-      _DoubleDateState;
-
+      _DoubleDateStateCreating;
   const factory DoubleDateState.created(List<String> friends) =
-      _DoubleDateState;
+      _DoubleDateStateCreated;
 }

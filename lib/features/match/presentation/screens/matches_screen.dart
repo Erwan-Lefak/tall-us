@@ -94,7 +94,7 @@ class _MatchesScreenState extends ConsumerState<MatchesScreen> {
         ),
         child: _isLoading
             ? const Center(
-                child: MessageLineSkeleton(),
+                child: SkeletonListItem(),
               )
             : _matches.isEmpty
                 ? _buildEmptyState()

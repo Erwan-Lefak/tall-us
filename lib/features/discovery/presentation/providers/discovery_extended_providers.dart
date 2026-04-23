@@ -1,15 +1,15 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:tall_us/core/appwrite/appwrite_config.dart';
+import 'package:tall_us/core/appwrite/appwrite_client.dart';
 import 'package:tall_us/core/utils/logger.dart';
 import 'package:tall_us/features/auth/presentation/providers/auth_providers.dart';
 import 'package:tall_us/features/discovery/data/repositories/discovery_extended_repository.dart';
 import 'package:tall_us/features/discovery/domain/repositories/discovery_repository.dart';
+import 'package:tall_us/features/discovery/presentation/providers/discovery_providers.dart';
 import 'package:tall_us/features/profile/domain/entities/user_profile_entity.dart';
 import 'package:tall_us/features/social/domain/entities/social_entities.dart';
 
 part 'discovery_extended_providers.freezed.dart';
-part 'discovery_extended_providers.g.dart';
 
 // ==================== Extended Repository Provider ====================
 
@@ -74,22 +74,11 @@ final whoLikesYouProvider =
 
 @freezed
 class WhoLikesYouState with _$WhoLikesYouState {
-  const factory WhoLikesYouState({
-    required List<UserProfileEntity> usersWhoLiked,
-    @Default(true) bool isLoading,
-    String? error,
-  }) = _WhoLikesYouState;
-
-  const factory WhoLikesYouState.initial() = _WhoLikesYouState;
-
-  const factory WhoLikesYouState.loading() = _WhoLikesYouState;
-
-  const factory WhoLikesYouState.loaded(List<UserProfileEntity> users) =
-      _WhoLikesYouState;
-
-  const factory WhoLikesYouState.error(String message) = _WhoLikesYouState;
-
-  const factory WhoLikesYouState.unauthenticated() = _WhoLikesYouState;
+  const factory WhoLikesYouState.initial() = _WhoLikesYouStateInitial;
+  const factory WhoLikesYouState.loading() = _WhoLikesYouStateLoading;
+  const factory WhoLikesYouState.loaded(List<UserProfileEntity> users) = _WhoLikesYouStateLoaded;
+  const factory WhoLikesYouState.error(String message) = _WhoLikesYouStateError;
+  const factory WhoLikesYouState.unauthenticated() = _WhoLikesYouStateUnauthenticated;
 }
 
 // ==================== Top Picks Provider ====================
@@ -119,29 +108,44 @@ class TopPicksNotifier extends StateNotifier<TopPicksState> {
       // Get all profiles first
       final profiles = await _discoveryRepository.getProfilesToDiscover(
         userId: _currentUserId!,
-        limit: 50,
+        minAge: 18,
+        maxAge: 100,
+        minHeightCm: 150,
+        maxHeightCm: 220,
+        preferredGenders: [],
+        maxDistanceKm: 100,
+        userCity: '',
+        userCountry: '',
       );
 
       // Calculate top picks
       final topPickScores = await _repository.getTopPicks(_currentUserId!);
 
-      if (topPickScores.isEmpty) {
-        // No cached scores - calculate on client side
-        final calculatedScores = _calculateTopPicks(profiles);
-        state = TopPicksState.loaded(calculatedScores);
-      } else {
-        // Merge profiles with scores
-        final profileMap = {for (var p in profiles) p.id: p};
-        final topPicks = topPickScores
-            .where((score) => profileMap.containsKey(score.profileId))
-            .map((score) => TopPickWithProfile(
-                  score: score,
-                  profile: profileMap[score.profileId]!,
-                ))
-            .toList();
+      profiles.fold(
+        (failure) {
+          AppLogger.e('Failed to load profiles for top picks', error: failure);
+          state = TopPicksState.error(failure.toString());
+        },
+        (profileList) {
+          if (topPickScores.isEmpty) {
+            // No cached scores - calculate on client side
+            final calculatedScores = _calculateTopPicks(profileList);
+            state = TopPicksState.loaded(calculatedScores);
+          } else {
+            // Merge profiles with scores
+            final profileMap = {for (var p in profileList) p.id: p};
+            final topPicks = topPickScores
+                .where((score) => profileMap.containsKey(score.profileId))
+                .map((score) => TopPickWithProfile(
+                      score: score,
+                      profile: profileMap[score.profileId]!,
+                    ))
+                .toList();
 
-        state = TopPicksState.loaded(topPicks);
-      }
+            state = TopPicksState.loaded(topPicks);
+          }
+        },
+      );
     } catch (e, st) {
       AppLogger.e('Failed to load top picks', error: e, stackTrace: st);
       state = TopPicksState.error(e.toString());
@@ -265,22 +269,11 @@ class TopPickWithProfile {
 
 @freezed
 class TopPicksState with _$TopPicksState {
-  const factory TopPicksState({
-    required List<TopPickWithProfile> topPicks,
-    @Default(true) bool isLoading,
-    String? error,
-  }) = _TopPicksState;
-
-  const factory TopPicksState.initial() = _TopPicksState;
-
-  const factory TopPicksState.calculating() = _TopPicksState;
-
-  const factory TopPicksState.loaded(List<TopPickWithProfile> topPicks) =
-      _TopPicksState;
-
-  const factory TopPicksState.error(String message) = _TopPicksState;
-
-  const factory TopPicksState.unauthenticated() = _TopPicksState;
+  const factory TopPicksState.initial() = _TopPicksStateInitial;
+  const factory TopPicksState.calculating() = _TopPicksStateCalculating;
+  const factory TopPicksState.loaded(List<TopPickWithProfile> topPicks) = _TopPicksStateLoaded;
+  const factory TopPicksState.error(String message) = _TopPicksStateError;
+  const factory TopPicksState.unauthenticated() = _TopPicksStateUnauthenticated;
 }
 
 // ==================== Premium Status Provider ====================

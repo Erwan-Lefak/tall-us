@@ -112,7 +112,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
             Expanded(
               child: messageState.when(
                 loading: () => const Center(
-                  child: MessageLineSkeleton(),
+                  child: SkeletonListItem(),
                 ),
                 loaded: (messages) => messages.isEmpty
                     ? _buildEmptyState()
@@ -148,7 +148,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                   ),
                 ),
                 initial: () => const Center(
-                  child: MessageLineSkeleton(),
+                  child: SkeletonListItem(),
                 ),
               ),
             ),

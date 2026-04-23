@@ -3,6 +3,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:tall_us/core/theme/app_theme.dart';
 import 'package:tall_us/features/discovery/presentation/providers/discovery_extended_providers.dart';
 import 'package:tall_us/features/auth/presentation/providers/auth_providers.dart';
+import 'package:tall_us/features/auth/presentation/providers/auth_state.dart';
 
 /// Settings Screen
 ///
@@ -533,7 +534,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: ElevatedButton(
         onPressed: () {
-          ref.read(authStateProvider.notifier).logout();
+          ref.read(authNotifierProvider.notifier).logout();
         },
         style: ElevatedButton.styleFrom(
           backgroundColor: AppTheme.bordeaux,
