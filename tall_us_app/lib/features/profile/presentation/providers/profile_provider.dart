@@ -1,6 +1,10 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:tall_us/features/auth/data/datasources/auth_remote_datasource.dart';
+import 'package:tall_us/features/profile/data/datasources/profile_remote_datasource.dart';
+import 'package:tall_us/features/profile/data/repositories/profile_repository_impl.dart';
 import 'package:tall_us/features/profile/domain/entities/discovery_preferences_entity.dart';
 import 'package:tall_us/features/profile/domain/entities/user_profile_entity.dart';
+import 'package:tall_us/features/profile/domain/repositories/profile_repository.dart';
 import 'package:tall_us/features/profile/domain/usecases/get_discovery_preferences_usecase.dart';
 import 'package:tall_us/features/profile/domain/usecases/get_profile_usecase.dart';
 import 'package:tall_us/features/profile/domain/usecases/update_discovery_preferences_usecase.dart';
@@ -103,12 +107,13 @@ class ProfileNotifier extends StateNotifier<ProfileState> {
 
   /// Update specific profile fields
   Future<void> updateProfileFields({
+    String? displayName,
+    DateTime? birthday,
     String? bio,
     String? city,
     String? country,
     List<String>? photoUrls,
-    String? promptAnswer,
-    String? promptId,
+    String? lookingFor,
   }) async {
     if (state.profile == null) return;
 
@@ -116,12 +121,13 @@ class ProfileNotifier extends StateNotifier<ProfileState> {
 
     final result = await _updateProfileUseCase.updateFields(
       userId: state.profile!.userId,
+      displayName: displayName,
+      birthday: birthday,
       bio: bio,
       city: city,
       country: country,
       photoUrls: photoUrls,
-      promptAnswer: promptAnswer,
-      promptId: promptId,
+      lookingFor: lookingFor,
     );
 
     result.fold(
@@ -140,7 +146,7 @@ class ProfileNotifier extends StateNotifier<ProfileState> {
     );
   }
 
-  /// Upload a photo
+  /// Upload a photo (mobile - file path)
   Future<void> uploadPhoto(String filePath) async {
     if (state.profile == null) return;
 
@@ -163,6 +169,34 @@ class ProfileNotifier extends StateNotifier<ProfileState> {
         updateProfileFields(photoUrls: updatedPhotos);
       },
     );
+  }
+
+  /// Upload a photo from bytes (web compatible)
+  Future<void> uploadPhotoBytes(List<int> bytes, String filename) async {
+    if (state.profile == null) return;
+
+    state = state.copyWith(isLoading: true, error: null);
+
+    try {
+      final repository = _uploadPhotoUseCase.repository;
+      final result = await repository.uploadPhotoBytes(
+        userId: state.profile!.userId,
+        bytes: bytes,
+        filename: filename,
+      );
+
+      result.fold(
+        (failure) {
+          state = state.copyWith(isLoading: false, error: failure.message);
+        },
+        (photoUrl) {
+          final updatedPhotos = [...state.profile!.photoUrls, photoUrl];
+          updateProfileFields(photoUrls: updatedPhotos);
+        },
+      );
+    } catch (e) {
+      state = state.copyWith(isLoading: false, error: e.toString());
+    }
   }
 
   /// Delete a photo
@@ -209,17 +243,47 @@ class ProfileNotifier extends StateNotifier<ProfileState> {
 }
 
 /// Provider for profile use cases
-final profileUseCasesProvider = Provider((ref) {
-  // This will be provided by dependency injection
-  // For now, returning null - will be implemented with DI
-  throw UnimplementedError('Will be provided by DI container');
+// Layer 3: Repository
+final profileRepositoryProvider = Provider<ProfileRepository>((ref) {
+  final remoteDataSource = ref.watch(profileRemoteDataSourceProvider);
+  final authRemoteDataSource = ref.watch(authRemoteDataSourceProvider);
+  return ProfileRepositoryImpl(
+    remoteDataSource: remoteDataSource,
+    authRemoteDataSource: authRemoteDataSource,
+  );
+});
+
+// Layer 4: Use cases
+final getProfileUseCaseProvider = Provider<GetProfileUseCase>((ref) {
+  return GetProfileUseCase(ref.watch(profileRepositoryProvider));
+});
+
+final updateProfileUseCaseProvider = Provider<UpdateProfileUseCase>((ref) {
+  return UpdateProfileUseCase(ref.watch(profileRepositoryProvider));
+});
+
+final uploadPhotoUseCaseProvider = Provider<UploadPhotoUseCase>((ref) {
+  return UploadPhotoUseCase(ref.watch(profileRepositoryProvider));
+});
+
+final getDiscoveryPreferencesUseCaseProvider = Provider<GetDiscoveryPreferencesUseCase>((ref) {
+  return GetDiscoveryPreferencesUseCase(ref.watch(profileRepositoryProvider));
+});
+
+final updateDiscoveryPreferencesUseCaseProvider = Provider<UpdateDiscoveryPreferencesUseCase>((ref) {
+  return UpdateDiscoveryPreferencesUseCase(ref.watch(profileRepositoryProvider));
 });
 
 /// Provider for profile notifier
+// Layer 5: StateNotifier
 final profileProvider = StateNotifierProvider<ProfileNotifier, ProfileState>((ref) {
-  // This will be provided by dependency injection
-  // For now, returning null - will be implemented with DI
-  throw UnimplementedError('Will be provided by DI container');
+  return ProfileNotifier(
+    getProfileUseCase: ref.watch(getProfileUseCaseProvider),
+    updateProfileUseCase: ref.watch(updateProfileUseCaseProvider),
+    uploadPhotoUseCase: ref.watch(uploadPhotoUseCaseProvider),
+    getDiscoveryPreferencesUseCase: ref.watch(getDiscoveryPreferencesUseCaseProvider),
+    updateDiscoveryPreferencesUseCase: ref.watch(updateDiscoveryPreferencesUseCaseProvider),
+  );
 });
 
 /// Provider for current user's profile

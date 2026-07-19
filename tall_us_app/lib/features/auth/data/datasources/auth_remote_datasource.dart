@@ -65,14 +65,28 @@ class AuthRemoteDataSource {
         name: displayName,
       );
 
-      // Step 3: Create email verification session (verify on first login)
+      // Step 3: Create temp session to send verification email
       try {
         await _account.createEmailPasswordSession(
           email: email,
           password: password,
         );
+
+        // Send verification email
+        await _account.createVerification(
+          url: '${AppwriteConfig.appUrl}/auth/verify-email',
+        );
+
+        AppLogger.i('Verification email sent');
+
+        // Delete temp session so user stays logged out
+        await _account.deleteSession(sessionId: 'current');
       } catch (e) {
-        AppLogger.w('Failed to create session after registration: $e');
+        AppLogger.w('Failed to send verification email: $e');
+        // Try to clean up session
+        try {
+          await _account.deleteSession(sessionId: 'current');
+        } catch (_) {}
         // Continue anyway - user account was created successfully
       }
 
@@ -168,6 +182,19 @@ class AuthRemoteDataSource {
       // Get user data
       final user = await _account.get();
 
+      // Check if email is verified
+      if (!user.emailVerification) {
+        // Delete the session we just created
+        try {
+          await _account.deleteSession(sessionId: 'current');
+        } catch (_) {}
+        throw AppwriteException(
+          'Veuillez vérifier votre adresse email',
+          400,
+          'user_email_not_verified',
+        );
+      }
+
       // Try to get user document from database (may not exist for old accounts)
       ProfileEntity? profile;
       String roleStr = 'free';
@@ -225,16 +252,39 @@ class AuthRemoteDataSource {
     try {
       final user = await _account.get();
 
-      // Return user without profile for now
-      // Profile will be loaded separately
+      // Read the role from the users collection (defaults to free on failure,
+      // e.g. for accounts without a matching document yet).
+      String roleStr = 'free';
+      ProfileEntity? profile;
+      try {
+        final userDoc = await _databases.getDocument(
+          databaseId: AppwriteConfig.databaseId,
+          collectionId: AppwriteConfig.usersCollection,
+          documentId: user.$id,
+        );
+        roleStr = userDoc.data['role'] ?? 'free';
+
+        final profileId = userDoc.data['profile_id'];
+        if (profileId != null) {
+          final profileDoc = await _databases.getDocument(
+            databaseId: AppwriteConfig.databaseId,
+            collectionId: AppwriteConfig.profilesCollection,
+            documentId: profileId,
+          );
+          profile = ProfileEntity.fromJson(profileDoc.data);
+        }
+      } catch (e) {
+        AppLogger.w('User document not found in database, using defaults: $e');
+      }
+
       return UserEntity(
         id: user.$id,
         email: user.email,
         emailVerified: user.emailVerification,
-        role: const UserRole.free(),
+        role: UserRole.fromString(roleStr),
         createdAt: DateTime.parse(user.$createdAt),
         updatedAt: DateTime.parse(user.$updatedAt),
-        profile: null,
+        profile: profile,
       );
     } on AppwriteException catch (e) {
       if (e.code == 'user_unauthorized') {

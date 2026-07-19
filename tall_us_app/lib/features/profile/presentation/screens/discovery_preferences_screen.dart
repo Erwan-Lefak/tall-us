@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tall_us/core/theme/app_theme.dart';
+import 'package:tall_us/features/auth/presentation/providers/auth_providers.dart';
 import 'package:tall_us/features/profile/domain/entities/discovery_preferences_entity.dart';
+import 'package:tall_us/features/profile/data/datasources/profile_remote_datasource.dart';
 import 'package:tall_us/features/profile/presentation/providers/profile_provider.dart';
 
 /// Screen for editing discovery preferences
@@ -37,14 +39,20 @@ class _DiscoveryPreferencesScreenState
   }
 
   Future<void> _loadPreferences() async {
-    final profileState = ref.read(profileProvider);
-    final userProfile = profileState.profile;
-    final preferences = profileState.preferences;
+    final user = ref.read(authenticatedUserProvider);
+    if (user == null) return;
 
-    if (preferences != null) {
-      setState(() {
-        _preferences = preferences;
-      });
+    // Make sure the userId is set even if no preferences exist yet.
+    setState(() {
+      _preferences = _preferences.copyWith(userId: user.id);
+    });
+
+    // Fetch the user's saved preferences from the database.
+    await ref.read(profileProvider.notifier).loadDiscoveryPreferences(user.id);
+    if (!mounted) return;
+    final loaded = ref.read(profileProvider).preferences;
+    if (loaded != null) {
+      setState(() => _preferences = loaded);
     }
   }
 
@@ -578,10 +586,20 @@ class _DiscoveryPreferencesScreenState
     setState(() => _isLoading = true);
 
     try {
-      // Save preferences through the repository
-      final profileNotifier = ref.read(profileProvider.notifier);
+      final user = ref.read(authenticatedUserProvider);
+      final toSave =
+          _preferences.copyWith(userId: user?.id ?? _preferences.userId);
 
-      await profileNotifier.updateDiscoveryPreferences(_preferences);
+      // Create-or-update: works whether or not the preferences doc already
+      // exists (avoids the 404 from an update-only save).
+      await ref
+          .read(profileRemoteDataSourceProvider)
+          .saveDiscoveryPreferences(toSave);
+
+      // Refresh the in-memory state so other screens see the new values.
+      await ref
+          .read(profileProvider.notifier)
+          .loadDiscoveryPreferences(toSave.userId);
 
       if (mounted) {
         Navigator.of(context).pop();

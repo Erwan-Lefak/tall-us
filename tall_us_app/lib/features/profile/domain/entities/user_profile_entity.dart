@@ -1,22 +1,26 @@
 import 'package:equatable/equatable.dart';
 
 /// Entity representing a complete user profile
+/// Matches Appwrite `profiles` collection schema
 class UserProfileEntity extends Equatable {
   final String id;
   final String userId;
   final String displayName;
   final String? bio;
   final String gender;
-  final String? sexualOrientation;
   final int heightCm;
   final DateTime birthday;
   final String city;
-  final String country;
-  final List<String> photoUrls;
-  final String? promptAnswer;
-  final String? promptId;
+  final String country; // Maps to countryCode in Appwrite
+  final List<String> photoUrls; // Maps to photos[] in Appwrite
+  final String? avatarUrl;
+  final String lookingFor;
+  final List<String> hobbies;
+  final bool onboardingCompleted;
+  // Kept for backward compat with swipe/verification features (not in Appwrite schema)
   final bool heightVerified;
-  final int? age;
+  final String? spotifyPlaylistUrl;
+  final String? promptAnswer;
 
   const UserProfileEntity({
     required this.id,
@@ -24,21 +28,22 @@ class UserProfileEntity extends Equatable {
     required this.displayName,
     this.bio,
     required this.gender,
-    this.sexualOrientation,
     required this.heightCm,
     required this.birthday,
     required this.city,
     required this.country,
     this.photoUrls = const [],
-    this.promptAnswer,
-    this.promptId,
+    this.avatarUrl,
+    this.lookingFor = 'relationship',
+    this.hobbies = const [],
+    this.onboardingCompleted = false,
     this.heightVerified = false,
-    this.age,
+    this.spotifyPlaylistUrl,
+    this.promptAnswer,
   });
 
   /// Calculate age from birthday
   int calculateAge() {
-    if (age != null) return age!;
     final today = DateTime.now();
     int calculatedAge = today.year - birthday.year;
     if (today.month < birthday.month ||
@@ -58,11 +63,8 @@ class UserProfileEntity extends Equatable {
 
   /// Check if profile is complete (has minimum required info)
   bool isComplete() {
-    return bio != null &&
-        bio!.isNotEmpty &&
-        photoUrls.isNotEmpty &&
-        promptAnswer != null &&
-        promptAnswer!.isNotEmpty;
+    return onboardingCompleted ||
+        (bio != null && bio!.isNotEmpty && photoUrls.isNotEmpty);
   }
 
   @override
@@ -72,16 +74,18 @@ class UserProfileEntity extends Equatable {
         displayName,
         bio,
         gender,
-        sexualOrientation,
         heightCm,
         birthday,
         city,
         country,
         photoUrls,
-        promptAnswer,
-        promptId,
+        avatarUrl,
+        lookingFor,
+        hobbies,
+        onboardingCompleted,
         heightVerified,
-        age,
+        spotifyPlaylistUrl,
+        promptAnswer,
       ];
 
   UserProfileEntity copyWith({
@@ -90,16 +94,18 @@ class UserProfileEntity extends Equatable {
     String? displayName,
     String? bio,
     String? gender,
-    String? sexualOrientation,
     int? heightCm,
     DateTime? birthday,
     String? city,
     String? country,
     List<String>? photoUrls,
-    String? promptAnswer,
-    String? promptId,
+    String? avatarUrl,
+    String? lookingFor,
+    List<String>? hobbies,
+    bool? onboardingCompleted,
     bool? heightVerified,
-    int? age,
+    String? spotifyPlaylistUrl,
+    String? promptAnswer,
   }) {
     return UserProfileEntity(
       id: id ?? this.id,
@@ -107,27 +113,29 @@ class UserProfileEntity extends Equatable {
       displayName: displayName ?? this.displayName,
       bio: bio ?? this.bio,
       gender: gender ?? this.gender,
-      sexualOrientation: sexualOrientation ?? this.sexualOrientation,
       heightCm: heightCm ?? this.heightCm,
       birthday: birthday ?? this.birthday,
       city: city ?? this.city,
       country: country ?? this.country,
       photoUrls: photoUrls ?? this.photoUrls,
-      promptAnswer: promptAnswer ?? this.promptAnswer,
-      promptId: promptId ?? this.promptId,
+      avatarUrl: avatarUrl ?? this.avatarUrl,
+      lookingFor: lookingFor ?? this.lookingFor,
+      hobbies: hobbies ?? this.hobbies,
+      onboardingCompleted: onboardingCompleted ?? this.onboardingCompleted,
       heightVerified: heightVerified ?? this.heightVerified,
-      age: age ?? this.age,
+      spotifyPlaylistUrl: spotifyPlaylistUrl ?? this.spotifyPlaylistUrl,
+      promptAnswer: promptAnswer ?? this.promptAnswer,
     );
   }
 
   /// Create from Map (for Appwrite documents)
   factory UserProfileEntity.fromMap(Map<String, dynamic> map) {
-    // Parse photoUrls
+    // Parse photos
     List<String> photoUrls = [];
-    if (map['photoUrls'] != null) {
-      if (map['photoUrls'] is List) {
-        photoUrls = List<String>.from(map['photoUrls'] as List);
-      }
+    if (map['photos'] is List) {
+      photoUrls = List<String>.from(map['photos'] as List);
+    } else if (map['photoUrls'] is List) {
+      photoUrls = List<String>.from(map['photoUrls'] as List);
     }
 
     // Parse birthday
@@ -137,25 +145,29 @@ class UserProfileEntity extends Equatable {
     } else if (map['birthday'] is DateTime) {
       birthday = map['birthday'] as DateTime;
     } else {
-      birthday = DateTime.now(); // Fallback
+      birthday = DateTime.now();
     }
 
     return UserProfileEntity(
       id: map['\$id'] ?? map['id'] ?? '',
-      userId: map['userId'] ?? map['user_id'] ?? '',
+      userId: map['userId'] ?? '',
       displayName: map['displayName'] ?? map['display_name'] ?? '',
       bio: map['bio'],
       gender: map['gender'] ?? 'other',
-      sexualOrientation: map['sexualOrientation'] ?? map['sexual_orientation'],
-      heightCm: map['heightCm'] ?? map['height_cm'] ?? 0,
+      heightCm: map['height'] ?? map['heightCm'] ?? map['height_cm'] ?? 0,
       birthday: birthday,
       city: map['city'] ?? '',
-      country: map['country'] ?? '',
+      country: map['countryCode'] ?? map['country_code'] ?? map['country'] ?? '',
       photoUrls: photoUrls,
-      promptAnswer: map['promptAnswer'] ?? map['prompt_answer'],
-      promptId: map['promptId'] ?? map['prompt_id'],
+      avatarUrl: map['avatarUrl'] ?? map['avatar_url'],
+      lookingFor: map['lookingFor'] ?? map['looking_for'] ?? 'relationship',
+      hobbies: map['hobbies'] is List
+          ? List<String>.from(map['hobbies'] as List)
+          : const [],
+      onboardingCompleted: map['onboardingCompleted'] ?? false,
       heightVerified: map['heightVerified'] ?? map['height_verified'] ?? false,
-      age: map['age'],
+      spotifyPlaylistUrl: map['spotifyPlaylistUrl'],
+      promptAnswer: map['promptAnswer'] ?? map['prompt_answer'],
     );
   }
 
@@ -167,16 +179,17 @@ class UserProfileEntity extends Equatable {
       'displayName': displayName,
       'bio': bio,
       'gender': gender,
-      'sexualOrientation': sexualOrientation,
-      'heightCm': heightCm,
+      'height': heightCm,
       'birthday': birthday.toIso8601String(),
       'city': city,
-      'country': country,
-      'photoUrls': photoUrls,
-      'promptAnswer': promptAnswer,
-      'promptId': promptId,
+      'countryCode': country,
+      'photos': photoUrls,
+      'avatarUrl': avatarUrl,
+      'lookingFor': lookingFor,
+      'hobbies': hobbies,
+      'onboardingCompleted': onboardingCompleted,
       'heightVerified': heightVerified,
-      'age': age,
+      if (spotifyPlaylistUrl != null) 'spotifyPlaylistUrl': spotifyPlaylistUrl,
     };
   }
 }

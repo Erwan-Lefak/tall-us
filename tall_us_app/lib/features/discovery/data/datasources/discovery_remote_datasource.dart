@@ -25,25 +25,16 @@ class DiscoveryRemoteDataSource {
     try {
       AppLogger.i('Querying profiles from Appwrite');
 
-      // Build queries for filtering
-      final queries = <String>[];
-
-      // Only get profiles with photos
-      queries.add('attribute.exists("photoUrls")');
-      queries.add('attribute.size("photoUrls", 1, ">")');
-
-      // Only get completed profiles
-      queries.add('attribute.exists("displayName")');
-      queries.add('attribute.exists("birthday")');
-      queries.add('attribute.exists("heightCm")');
-
-      // Exclude current user
-      queries.add('attribute.notEqual("\$id", "$userId")');
+      // Build queries for filtering (use Query helpers with real schema fields).
+      // profiles collection: userId, displayName, gender, height, birthday, photos, ...
+      final queries = <String>[
+        Query.notEqual('userId', userId),
+        Query.limit(100),
+      ];
 
       // Filter by gender if preferences specified
       if (preferredGenders.isNotEmpty) {
-        final genderQuery = preferredGenders.map((g) => 'gender="$g"').join(' || ');
-        queries.add('($genderQuery)');
+        queries.add(Query.equal('gender', preferredGenders));
       }
 
       // Query profiles from Appwrite
@@ -61,6 +52,11 @@ class DiscoveryRemoteDataSource {
       for (final doc in result.documents) {
         try {
           final profile = UserProfileEntity.fromMap(doc.data);
+
+          // Only profiles with at least one photo
+          if (profile.photoUrls.isEmpty && (profile.avatarUrl ?? '').isEmpty) {
+            continue;
+          }
 
           // Apply additional filters that can't be done in Appwrite query
           final age = profile.calculateAge();

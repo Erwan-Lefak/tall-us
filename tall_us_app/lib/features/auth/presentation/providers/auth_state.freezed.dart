@@ -21,6 +21,7 @@ mixin _$AuthState {
     required TResult Function() initial,
     required TResult Function() loading,
     required TResult Function(UserEntity user) authenticated,
+    required TResult Function(String email, String userId) needsVerification,
     required TResult Function() unauthenticated,
     required TResult Function(String message) error,
   }) =>
@@ -30,6 +31,7 @@ mixin _$AuthState {
     TResult? Function()? initial,
     TResult? Function()? loading,
     TResult? Function(UserEntity user)? authenticated,
+    TResult? Function(String email, String userId)? needsVerification,
     TResult? Function()? unauthenticated,
     TResult? Function(String message)? error,
   }) =>
@@ -39,6 +41,7 @@ mixin _$AuthState {
     TResult Function()? initial,
     TResult Function()? loading,
     TResult Function(UserEntity user)? authenticated,
+    TResult Function(String email, String userId)? needsVerification,
     TResult Function()? unauthenticated,
     TResult Function(String message)? error,
     required TResult orElse(),
@@ -49,6 +52,7 @@ mixin _$AuthState {
     required TResult Function(_Initial value) initial,
     required TResult Function(_Loading value) loading,
     required TResult Function(_Authenticated value) authenticated,
+    required TResult Function(_NeedsVerification value) needsVerification,
     required TResult Function(_Unauthenticated value) unauthenticated,
     required TResult Function(_Error value) error,
   }) =>
@@ -58,6 +62,7 @@ mixin _$AuthState {
     TResult? Function(_Initial value)? initial,
     TResult? Function(_Loading value)? loading,
     TResult? Function(_Authenticated value)? authenticated,
+    TResult? Function(_NeedsVerification value)? needsVerification,
     TResult? Function(_Unauthenticated value)? unauthenticated,
     TResult? Function(_Error value)? error,
   }) =>
@@ -67,6 +72,7 @@ mixin _$AuthState {
     TResult Function(_Initial value)? initial,
     TResult Function(_Loading value)? loading,
     TResult Function(_Authenticated value)? authenticated,
+    TResult Function(_NeedsVerification value)? needsVerification,
     TResult Function(_Unauthenticated value)? unauthenticated,
     TResult Function(_Error value)? error,
     required TResult orElse(),
@@ -138,6 +144,7 @@ class _$InitialImpl implements _Initial {
     required TResult Function() initial,
     required TResult Function() loading,
     required TResult Function(UserEntity user) authenticated,
+    required TResult Function(String email, String userId) needsVerification,
     required TResult Function() unauthenticated,
     required TResult Function(String message) error,
   }) {
@@ -150,6 +157,7 @@ class _$InitialImpl implements _Initial {
     TResult? Function()? initial,
     TResult? Function()? loading,
     TResult? Function(UserEntity user)? authenticated,
+    TResult? Function(String email, String userId)? needsVerification,
     TResult? Function()? unauthenticated,
     TResult? Function(String message)? error,
   }) {
@@ -162,6 +170,7 @@ class _$InitialImpl implements _Initial {
     TResult Function()? initial,
     TResult Function()? loading,
     TResult Function(UserEntity user)? authenticated,
+    TResult Function(String email, String userId)? needsVerification,
     TResult Function()? unauthenticated,
     TResult Function(String message)? error,
     required TResult orElse(),
@@ -178,6 +187,7 @@ class _$InitialImpl implements _Initial {
     required TResult Function(_Initial value) initial,
     required TResult Function(_Loading value) loading,
     required TResult Function(_Authenticated value) authenticated,
+    required TResult Function(_NeedsVerification value) needsVerification,
     required TResult Function(_Unauthenticated value) unauthenticated,
     required TResult Function(_Error value) error,
   }) {
@@ -190,6 +200,7 @@ class _$InitialImpl implements _Initial {
     TResult? Function(_Initial value)? initial,
     TResult? Function(_Loading value)? loading,
     TResult? Function(_Authenticated value)? authenticated,
+    TResult? Function(_NeedsVerification value)? needsVerification,
     TResult? Function(_Unauthenticated value)? unauthenticated,
     TResult? Function(_Error value)? error,
   }) {
@@ -202,6 +213,7 @@ class _$InitialImpl implements _Initial {
     TResult Function(_Initial value)? initial,
     TResult Function(_Loading value)? loading,
     TResult Function(_Authenticated value)? authenticated,
+    TResult Function(_NeedsVerification value)? needsVerification,
     TResult Function(_Unauthenticated value)? unauthenticated,
     TResult Function(_Error value)? error,
     required TResult orElse(),
@@ -261,6 +273,7 @@ class _$LoadingImpl implements _Loading {
     required TResult Function() initial,
     required TResult Function() loading,
     required TResult Function(UserEntity user) authenticated,
+    required TResult Function(String email, String userId) needsVerification,
     required TResult Function() unauthenticated,
     required TResult Function(String message) error,
   }) {
@@ -273,6 +286,7 @@ class _$LoadingImpl implements _Loading {
     TResult? Function()? initial,
     TResult? Function()? loading,
     TResult? Function(UserEntity user)? authenticated,
+    TResult? Function(String email, String userId)? needsVerification,
     TResult? Function()? unauthenticated,
     TResult? Function(String message)? error,
   }) {
@@ -285,6 +299,7 @@ class _$LoadingImpl implements _Loading {
     TResult Function()? initial,
     TResult Function()? loading,
     TResult Function(UserEntity user)? authenticated,
+    TResult Function(String email, String userId)? needsVerification,
     TResult Function()? unauthenticated,
     TResult Function(String message)? error,
     required TResult orElse(),
@@ -301,6 +316,7 @@ class _$LoadingImpl implements _Loading {
     required TResult Function(_Initial value) initial,
     required TResult Function(_Loading value) loading,
     required TResult Function(_Authenticated value) authenticated,
+    required TResult Function(_NeedsVerification value) needsVerification,
     required TResult Function(_Unauthenticated value) unauthenticated,
     required TResult Function(_Error value) error,
   }) {
@@ -313,6 +329,7 @@ class _$LoadingImpl implements _Loading {
     TResult? Function(_Initial value)? initial,
     TResult? Function(_Loading value)? loading,
     TResult? Function(_Authenticated value)? authenticated,
+    TResult? Function(_NeedsVerification value)? needsVerification,
     TResult? Function(_Unauthenticated value)? unauthenticated,
     TResult? Function(_Error value)? error,
   }) {
@@ -325,6 +342,7 @@ class _$LoadingImpl implements _Loading {
     TResult Function(_Initial value)? initial,
     TResult Function(_Loading value)? loading,
     TResult Function(_Authenticated value)? authenticated,
+    TResult Function(_NeedsVerification value)? needsVerification,
     TResult Function(_Unauthenticated value)? unauthenticated,
     TResult Function(_Error value)? error,
     required TResult orElse(),
@@ -423,6 +441,7 @@ class _$AuthenticatedImpl implements _Authenticated {
     required TResult Function() initial,
     required TResult Function() loading,
     required TResult Function(UserEntity user) authenticated,
+    required TResult Function(String email, String userId) needsVerification,
     required TResult Function() unauthenticated,
     required TResult Function(String message) error,
   }) {
@@ -435,6 +454,7 @@ class _$AuthenticatedImpl implements _Authenticated {
     TResult? Function()? initial,
     TResult? Function()? loading,
     TResult? Function(UserEntity user)? authenticated,
+    TResult? Function(String email, String userId)? needsVerification,
     TResult? Function()? unauthenticated,
     TResult? Function(String message)? error,
   }) {
@@ -447,6 +467,7 @@ class _$AuthenticatedImpl implements _Authenticated {
     TResult Function()? initial,
     TResult Function()? loading,
     TResult Function(UserEntity user)? authenticated,
+    TResult Function(String email, String userId)? needsVerification,
     TResult Function()? unauthenticated,
     TResult Function(String message)? error,
     required TResult orElse(),
@@ -463,6 +484,7 @@ class _$AuthenticatedImpl implements _Authenticated {
     required TResult Function(_Initial value) initial,
     required TResult Function(_Loading value) loading,
     required TResult Function(_Authenticated value) authenticated,
+    required TResult Function(_NeedsVerification value) needsVerification,
     required TResult Function(_Unauthenticated value) unauthenticated,
     required TResult Function(_Error value) error,
   }) {
@@ -475,6 +497,7 @@ class _$AuthenticatedImpl implements _Authenticated {
     TResult? Function(_Initial value)? initial,
     TResult? Function(_Loading value)? loading,
     TResult? Function(_Authenticated value)? authenticated,
+    TResult? Function(_NeedsVerification value)? needsVerification,
     TResult? Function(_Unauthenticated value)? unauthenticated,
     TResult? Function(_Error value)? error,
   }) {
@@ -487,6 +510,7 @@ class _$AuthenticatedImpl implements _Authenticated {
     TResult Function(_Initial value)? initial,
     TResult Function(_Loading value)? loading,
     TResult Function(_Authenticated value)? authenticated,
+    TResult Function(_NeedsVerification value)? needsVerification,
     TResult Function(_Unauthenticated value)? unauthenticated,
     TResult Function(_Error value)? error,
     required TResult orElse(),
@@ -507,6 +531,182 @@ abstract class _Authenticated implements AuthState {
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
   _$$AuthenticatedImplCopyWith<_$AuthenticatedImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class _$$NeedsVerificationImplCopyWith<$Res> {
+  factory _$$NeedsVerificationImplCopyWith(_$NeedsVerificationImpl value,
+          $Res Function(_$NeedsVerificationImpl) then) =
+      __$$NeedsVerificationImplCopyWithImpl<$Res>;
+  @useResult
+  $Res call({String email, String userId});
+}
+
+/// @nodoc
+class __$$NeedsVerificationImplCopyWithImpl<$Res>
+    extends _$AuthStateCopyWithImpl<$Res, _$NeedsVerificationImpl>
+    implements _$$NeedsVerificationImplCopyWith<$Res> {
+  __$$NeedsVerificationImplCopyWithImpl(_$NeedsVerificationImpl _value,
+      $Res Function(_$NeedsVerificationImpl) _then)
+      : super(_value, _then);
+
+  /// Create a copy of AuthState
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? email = null,
+    Object? userId = null,
+  }) {
+    return _then(_$NeedsVerificationImpl(
+      email: null == email
+          ? _value.email
+          : email // ignore: cast_nullable_to_non_nullable
+              as String,
+      userId: null == userId
+          ? _value.userId
+          : userId // ignore: cast_nullable_to_non_nullable
+              as String,
+    ));
+  }
+}
+
+/// @nodoc
+
+class _$NeedsVerificationImpl implements _NeedsVerification {
+  const _$NeedsVerificationImpl({required this.email, required this.userId});
+
+  @override
+  final String email;
+  @override
+  final String userId;
+
+  @override
+  String toString() {
+    return 'AuthState.needsVerification(email: $email, userId: $userId)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$NeedsVerificationImpl &&
+            (identical(other.email, email) || other.email == email) &&
+            (identical(other.userId, userId) || other.userId == userId));
+  }
+
+  @override
+  int get hashCode => Object.hash(runtimeType, email, userId);
+
+  /// Create a copy of AuthState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$NeedsVerificationImplCopyWith<_$NeedsVerificationImpl> get copyWith =>
+      __$$NeedsVerificationImplCopyWithImpl<_$NeedsVerificationImpl>(
+          this, _$identity);
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function() initial,
+    required TResult Function() loading,
+    required TResult Function(UserEntity user) authenticated,
+    required TResult Function(String email, String userId) needsVerification,
+    required TResult Function() unauthenticated,
+    required TResult Function(String message) error,
+  }) {
+    return needsVerification(email, userId);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function()? initial,
+    TResult? Function()? loading,
+    TResult? Function(UserEntity user)? authenticated,
+    TResult? Function(String email, String userId)? needsVerification,
+    TResult? Function()? unauthenticated,
+    TResult? Function(String message)? error,
+  }) {
+    return needsVerification?.call(email, userId);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function()? initial,
+    TResult Function()? loading,
+    TResult Function(UserEntity user)? authenticated,
+    TResult Function(String email, String userId)? needsVerification,
+    TResult Function()? unauthenticated,
+    TResult Function(String message)? error,
+    required TResult orElse(),
+  }) {
+    if (needsVerification != null) {
+      return needsVerification(email, userId);
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(_Initial value) initial,
+    required TResult Function(_Loading value) loading,
+    required TResult Function(_Authenticated value) authenticated,
+    required TResult Function(_NeedsVerification value) needsVerification,
+    required TResult Function(_Unauthenticated value) unauthenticated,
+    required TResult Function(_Error value) error,
+  }) {
+    return needsVerification(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(_Initial value)? initial,
+    TResult? Function(_Loading value)? loading,
+    TResult? Function(_Authenticated value)? authenticated,
+    TResult? Function(_NeedsVerification value)? needsVerification,
+    TResult? Function(_Unauthenticated value)? unauthenticated,
+    TResult? Function(_Error value)? error,
+  }) {
+    return needsVerification?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(_Initial value)? initial,
+    TResult Function(_Loading value)? loading,
+    TResult Function(_Authenticated value)? authenticated,
+    TResult Function(_NeedsVerification value)? needsVerification,
+    TResult Function(_Unauthenticated value)? unauthenticated,
+    TResult Function(_Error value)? error,
+    required TResult orElse(),
+  }) {
+    if (needsVerification != null) {
+      return needsVerification(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class _NeedsVerification implements AuthState {
+  const factory _NeedsVerification(
+      {required final String email,
+      required final String userId}) = _$NeedsVerificationImpl;
+
+  String get email;
+  String get userId;
+
+  /// Create a copy of AuthState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$NeedsVerificationImplCopyWith<_$NeedsVerificationImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
@@ -554,6 +754,7 @@ class _$UnauthenticatedImpl implements _Unauthenticated {
     required TResult Function() initial,
     required TResult Function() loading,
     required TResult Function(UserEntity user) authenticated,
+    required TResult Function(String email, String userId) needsVerification,
     required TResult Function() unauthenticated,
     required TResult Function(String message) error,
   }) {
@@ -566,6 +767,7 @@ class _$UnauthenticatedImpl implements _Unauthenticated {
     TResult? Function()? initial,
     TResult? Function()? loading,
     TResult? Function(UserEntity user)? authenticated,
+    TResult? Function(String email, String userId)? needsVerification,
     TResult? Function()? unauthenticated,
     TResult? Function(String message)? error,
   }) {
@@ -578,6 +780,7 @@ class _$UnauthenticatedImpl implements _Unauthenticated {
     TResult Function()? initial,
     TResult Function()? loading,
     TResult Function(UserEntity user)? authenticated,
+    TResult Function(String email, String userId)? needsVerification,
     TResult Function()? unauthenticated,
     TResult Function(String message)? error,
     required TResult orElse(),
@@ -594,6 +797,7 @@ class _$UnauthenticatedImpl implements _Unauthenticated {
     required TResult Function(_Initial value) initial,
     required TResult Function(_Loading value) loading,
     required TResult Function(_Authenticated value) authenticated,
+    required TResult Function(_NeedsVerification value) needsVerification,
     required TResult Function(_Unauthenticated value) unauthenticated,
     required TResult Function(_Error value) error,
   }) {
@@ -606,6 +810,7 @@ class _$UnauthenticatedImpl implements _Unauthenticated {
     TResult? Function(_Initial value)? initial,
     TResult? Function(_Loading value)? loading,
     TResult? Function(_Authenticated value)? authenticated,
+    TResult? Function(_NeedsVerification value)? needsVerification,
     TResult? Function(_Unauthenticated value)? unauthenticated,
     TResult? Function(_Error value)? error,
   }) {
@@ -618,6 +823,7 @@ class _$UnauthenticatedImpl implements _Unauthenticated {
     TResult Function(_Initial value)? initial,
     TResult Function(_Loading value)? loading,
     TResult Function(_Authenticated value)? authenticated,
+    TResult Function(_NeedsVerification value)? needsVerification,
     TResult Function(_Unauthenticated value)? unauthenticated,
     TResult Function(_Error value)? error,
     required TResult orElse(),
@@ -704,6 +910,7 @@ class _$ErrorImpl implements _Error {
     required TResult Function() initial,
     required TResult Function() loading,
     required TResult Function(UserEntity user) authenticated,
+    required TResult Function(String email, String userId) needsVerification,
     required TResult Function() unauthenticated,
     required TResult Function(String message) error,
   }) {
@@ -716,6 +923,7 @@ class _$ErrorImpl implements _Error {
     TResult? Function()? initial,
     TResult? Function()? loading,
     TResult? Function(UserEntity user)? authenticated,
+    TResult? Function(String email, String userId)? needsVerification,
     TResult? Function()? unauthenticated,
     TResult? Function(String message)? error,
   }) {
@@ -728,6 +936,7 @@ class _$ErrorImpl implements _Error {
     TResult Function()? initial,
     TResult Function()? loading,
     TResult Function(UserEntity user)? authenticated,
+    TResult Function(String email, String userId)? needsVerification,
     TResult Function()? unauthenticated,
     TResult Function(String message)? error,
     required TResult orElse(),
@@ -744,6 +953,7 @@ class _$ErrorImpl implements _Error {
     required TResult Function(_Initial value) initial,
     required TResult Function(_Loading value) loading,
     required TResult Function(_Authenticated value) authenticated,
+    required TResult Function(_NeedsVerification value) needsVerification,
     required TResult Function(_Unauthenticated value) unauthenticated,
     required TResult Function(_Error value) error,
   }) {
@@ -756,6 +966,7 @@ class _$ErrorImpl implements _Error {
     TResult? Function(_Initial value)? initial,
     TResult? Function(_Loading value)? loading,
     TResult? Function(_Authenticated value)? authenticated,
+    TResult? Function(_NeedsVerification value)? needsVerification,
     TResult? Function(_Unauthenticated value)? unauthenticated,
     TResult? Function(_Error value)? error,
   }) {
@@ -768,6 +979,7 @@ class _$ErrorImpl implements _Error {
     TResult Function(_Initial value)? initial,
     TResult Function(_Loading value)? loading,
     TResult Function(_Authenticated value)? authenticated,
+    TResult Function(_NeedsVerification value)? needsVerification,
     TResult Function(_Unauthenticated value)? unauthenticated,
     TResult Function(_Error value)? error,
     required TResult orElse(),

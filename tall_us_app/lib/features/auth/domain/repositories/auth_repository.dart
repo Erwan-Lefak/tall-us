@@ -51,6 +51,24 @@ abstract class AuthRepository {
   /// Delete account
   Future<Either<Failure, void>> deleteAccount();
 
+  /// Send email verification to current user
+  Future<Either<Failure, void>> sendEmailVerification();
+
+  /// Send verification email using temporary session (after registration)
+  Future<Either<Failure, void>> sendVerificationWithTempSession({
+    required String email,
+    required String password,
+  });
+
+  /// Verify email with callback parameters
+  Future<Either<Failure, bool>> verifyEmail({
+    required String userId,
+    required String secret,
+  });
+
+  /// Check if current user's email is verified
+  Future<Either<Failure, bool>> checkEmailVerification();
+
   /// Check if user is authenticated
   bool get isAuthenticated;
 

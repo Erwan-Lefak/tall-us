@@ -104,7 +104,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(16),
                       child: Image.asset(
-                        'assets/images/logo.jpg',
+                        'assets/images/logosf.png',
                         width: 120,
                         height: 120,
                         fit: BoxFit.contain,

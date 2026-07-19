@@ -9,6 +9,12 @@ class AppwriteConfig {
   // Project ID - Get from Appwrite Console → Settings → General
   static const String projectId = '69a85fa1000386efe620';
 
+  // App URL - Used for email verification callback and deep links
+  static const String appUrl = String.fromEnvironment(
+    'APP_URL',
+    defaultValue: 'http://localhost:9090',
+  );
+
   // Database ID - Get from Appwrite Console → Databases
   static const String databaseId = 'tall_us_db';
 
@@ -28,6 +34,11 @@ class AppwriteConfig {
   static const String presenceCollection = 'presence';
   static const String notificationsCollection = 'notifications';
   static const String verificationsCollection = 'verifications';
+  static const String newslettersCollection = 'newsletters';
+  static const String emailTemplatesCollection = 'email_templates';
+  static const String eventsCollection = 'events';
+  static const String eventRsvpsCollection = 'event_rsvps';
+  static const String coachingSessionsCollection = 'coaching_sessions';
 
   // JWT Configuration
   static const String jwtSecret = String.fromEnvironment('JWT_SECRET');

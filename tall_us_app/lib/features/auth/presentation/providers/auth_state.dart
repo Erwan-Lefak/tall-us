@@ -17,6 +17,12 @@ class AuthState with _$AuthState {
   /// Authenticated state - user is logged in
   const factory AuthState.authenticated(UserEntity user) = _Authenticated;
 
+  /// Needs verification - user registered but email not verified
+  const factory AuthState.needsVerification({
+    required String email,
+    required String userId,
+  }) = _NeedsVerification;
+
   /// Unauthenticated state - user is logged out
   const factory AuthState.unauthenticated() = _Unauthenticated;
 
@@ -32,6 +38,11 @@ extension AuthStateX on AuthState {
 
   bool get isLoading => maybeWhen(
         loading: () => true,
+        orElse: () => false,
+      );
+
+  bool get needsVerification => maybeWhen(
+        needsVerification: (_, __) => true,
         orElse: () => false,
       );
 

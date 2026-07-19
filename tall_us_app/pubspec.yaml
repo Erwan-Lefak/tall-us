@@ -54,6 +54,9 @@ dependencies:
   cached_network_image: ^3.3.1
   image_picker: ^1.0.7
 
+  # Video
+  video_player: ^2.9.2
+
   # Navigation
   go_router: ^14.1.0
   url_launcher: ^6.3.0
@@ -69,6 +72,8 @@ dependencies:
   # Forms
   flutter_form_builder: ^10.3.0
   form_builder_validators: ^11.0.0
+  fl_chart: ^1.2.0
+  csv: ^8.0.0
 
 dev_dependencies:
   flutter_test:
@@ -88,6 +93,7 @@ flutter:
   assets:
     - assets/images/
     - assets/icons/
+    - assets/videos/
 
   # Fonts temporarily commented - will be added later
   # fonts:

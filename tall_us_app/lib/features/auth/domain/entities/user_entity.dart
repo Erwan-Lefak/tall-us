@@ -22,9 +22,9 @@ class UserEntity with _$UserEntity {
 
   // Getters
   bool get isDeleted => deletedAt != null;
-  bool get isPremium => role == UserRole.premium;
-  bool get isAdmin => role == UserRole.admin;
-  bool get isFree => role == UserRole.free;
+  bool get isPremium => role.maybeWhen(premium: () => true, orElse: () => false);
+  bool get isAdmin => role.maybeWhen(admin: () => true, orElse: () => false);
+  bool get isFree => role.maybeWhen(free: () => true, orElse: () => false);
 }
 
 /// User Role Enum

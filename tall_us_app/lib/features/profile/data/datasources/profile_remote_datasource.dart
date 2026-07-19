@@ -1,5 +1,7 @@
 import 'dart:io';
 import 'package:appwrite/appwrite.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:tall_us/core/appwrite/appwrite_client.dart';
 import 'package:tall_us/core/appwrite/appwrite_config.dart';
 import 'package:tall_us/core/utils/logger.dart';
 import 'package:tall_us/features/profile/data/models/user_profile_model.dart';
@@ -16,18 +18,31 @@ class ProfileRemoteDataSource {
   })  : _databases = databases,
         _storage = storage;
 
-  /// Get user profile by user ID
+  /// Get user profile by user ID (queries by userId field, not document ID)
   Future<UserProfileModel> getProfile(String userId) async {
     try {
       AppLogger.i('Fetching profile for user: $userId');
 
-      final document = await _databases.getDocument(
+      // Query by userId field since registration creates profiles with ID.unique()
+      final result = await _databases.listDocuments(
         databaseId: AppwriteConfig.databaseId,
         collectionId: AppwriteConfig.profilesCollection,
-        documentId: userId,
+        queries: [
+          Query.equal('userId', [userId]),
+          Query.limit(1),
+        ],
       );
 
-      AppLogger.i('Profile fetched successfully');
+      if (result.documents.isEmpty) {
+        throw AppwriteException(
+          'Profile not found for user: $userId',
+          404,
+          'document_not_found',
+        );
+      }
+
+      final document = result.documents.first;
+      AppLogger.i('Profile fetched successfully (docId: ${document.$id})');
       return UserProfileModel.fromJson(document.data);
     } on AppwriteException catch (e) {
       AppLogger.e('Failed to fetch profile', error: e);
@@ -68,15 +83,15 @@ class ProfileRemoteDataSource {
     }
   }
 
-  /// Update user profile
+  /// Update user profile (uses document ID, not userId)
   Future<UserProfileModel> updateProfile(UserProfileModel profile) async {
     try {
-      AppLogger.i('Updating profile for user: ${profile.userId}');
+      AppLogger.i('Updating profile for user: ${profile.userId} (docId: ${profile.id})');
 
       final document = await _databases.updateDocument(
         databaseId: AppwriteConfig.databaseId,
         collectionId: AppwriteConfig.profilesCollection,
-        documentId: profile.userId,
+        documentId: profile.id,
         data: profile.toJson(),
       );
 
@@ -88,7 +103,7 @@ class ProfileRemoteDataSource {
     }
   }
 
-  /// Upload a photo to storage
+  /// Upload a photo to storage from file path (mobile only)
   Future<String> uploadPhoto({
     required String userId,
     required String filePath,
@@ -101,30 +116,56 @@ class ProfileRemoteDataSource {
       final fileName = '${userId}_${DateTime.now().millisecondsSinceEpoch}_${file.path.split('/').last}';
 
       final fileData = await file.readAsBytes();
-      final inputFile = InputFile.fromBytes(
-        bytes: fileData,
-        filename: fileName,
-      );
-
-      final result = await _storage.createFile(
-        bucketId: AppwriteConfig.photosBucketId,
-        fileId: ID.unique(),
-        file: inputFile,
-        permissions: [
-          Permission.read(Role.user(userId)),
-          Permission.read(Role.guests()), // Allow public read for photos
-        ],
-      );
-
-      // Construct file URL
-      final fileUrl = '${AppwriteConfig.endpoint}/storage/buckets/${AppwriteConfig.photosBucketId}/files/${result.$id}/view?project=${AppwriteConfig.projectId}';
-
-      AppLogger.i('Photo uploaded successfully: $fileUrl');
-      return fileUrl;
+      return await _uploadPhotoBytes(userId: userId, bytes: fileData, filename: fileName);
     } on AppwriteException catch (e) {
       AppLogger.e('Failed to upload photo', error: e);
       rethrow;
     }
+  }
+
+  /// Upload a photo from raw bytes (works on web + mobile)
+  Future<String> uploadPhotoBytes({
+    required String userId,
+    required List<int> bytes,
+    required String filename,
+  }) async {
+    try {
+      return await _uploadPhotoBytes(userId: userId, bytes: bytes, filename: filename);
+    } on AppwriteException catch (e) {
+      AppLogger.e('Failed to upload photo bytes', error: e);
+      rethrow;
+    }
+  }
+
+  /// Internal: upload bytes to Appwrite storage
+  Future<String> _uploadPhotoBytes({
+    required String userId,
+    required List<int> bytes,
+    required String filename,
+  }) async {
+    AppLogger.i('Uploading photo for user: $userId');
+
+    final inputFile = InputFile.fromBytes(
+      bytes: bytes,
+      filename: filename,
+    );
+
+    final result = await _storage.createFile(
+      bucketId: AppwriteConfig.photosBucketId,
+      fileId: ID.unique(),
+      file: inputFile,
+      permissions: [
+        // Photos must be publicly viewable (img tags use unauthenticated GET).
+        Permission.read(Role.any()),
+        Permission.update(Role.user(userId)),
+        Permission.delete(Role.user(userId)),
+      ],
+    );
+
+    final fileUrl = '${AppwriteConfig.endpoint}/storage/buckets/${AppwriteConfig.photosBucketId}/files/${result.$id}/view?project=${AppwriteConfig.projectId}';
+
+    AppLogger.i('Photo uploaded successfully: $fileUrl');
+    return fileUrl;
   }
 
   /// Upload multiple photos
@@ -229,6 +270,52 @@ class ProfileRemoteDataSource {
     }
   }
 
+  /// Create discovery preferences (first-time save). Uses userId as doc id.
+  Future<Map<String, dynamic>> createDiscoveryPreferences(
+      DiscoveryPreferencesEntity preferences) async {
+    try {
+      AppLogger.i(
+          'Creating discovery preferences for user: ${preferences.userId}');
+
+      final data = {
+        'userId': preferences.userId,
+        'minAge': preferences.minAge,
+        'maxAge': preferences.maxAge,
+        'maxDistanceKm': preferences.maxDistanceKm,
+        'preferredGenders': preferences.preferredGenders,
+        'minHeightCm': preferences.minHeightCm,
+        'maxHeightCm': preferences.maxHeightCm,
+        'city': preferences.city,
+        'country': preferences.country,
+        'lastUpdated': DateTime.now().toIso8601String(),
+      };
+
+      final document = await _databases.createDocument(
+        databaseId: AppwriteConfig.databaseId,
+        collectionId: AppwriteConfig.preferencesCollection,
+        documentId: preferences.userId,
+        data: data,
+      );
+
+      AppLogger.i('Discovery preferences created successfully');
+      return document.data;
+    } on AppwriteException catch (e) {
+      AppLogger.e('Failed to create discovery preferences', error: e);
+      rethrow;
+    }
+  }
+
+  /// Create-or-update discovery preferences (robust first-time save).
+  Future<void> saveDiscoveryPreferences(
+      DiscoveryPreferencesEntity preferences) async {
+    try {
+      await createDiscoveryPreferences(preferences);
+    } catch (_) {
+      // Document already exists -> fall back to update.
+      await updateDiscoveryPreferences(preferences);
+    }
+  }
+
   /// Delete user profile
   Future<void> deleteProfile(String userId) async {
     try {
@@ -247,3 +334,10 @@ class ProfileRemoteDataSource {
     }
   }
 }
+
+/// Provider for ProfileRemoteDataSource
+final profileRemoteDataSourceProvider = Provider<ProfileRemoteDataSource>((ref) {
+  final databases = ref.watch(databasesProvider);
+  final storage = ref.watch(storageProvider);
+  return ProfileRemoteDataSource(databases: databases, storage: storage);
+});

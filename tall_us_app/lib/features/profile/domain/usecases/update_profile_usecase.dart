@@ -17,21 +17,23 @@ class UpdateProfileUseCase {
   /// Update specific fields only
   Future<Either<Failure, UserProfileEntity>> updateFields({
     required String userId,
+    String? displayName,
+    DateTime? birthday,
     String? bio,
     String? city,
     String? country,
     List<String>? photoUrls,
-    String? promptAnswer,
-    String? promptId,
+    String? lookingFor,
   }) async {
     return await repository.updateProfileFields(
       userId: userId,
+      displayName: displayName,
+      birthday: birthday,
       bio: bio,
       city: city,
       country: country,
       photoUrls: photoUrls,
-      promptAnswer: promptAnswer,
-      promptId: promptId,
+      lookingFor: lookingFor,
     );
   }
 }

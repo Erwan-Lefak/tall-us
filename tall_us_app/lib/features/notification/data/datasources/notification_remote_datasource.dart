@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:dartz/dartz.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:appwrite/appwrite.dart';
@@ -25,9 +26,9 @@ class NotificationRemoteDatasource {
         _courierAuthToken = courierAuthToken,
         _localNotifications = localNotifications ?? FlutterLocalNotificationsPlugin();
 
-  /// Initialize Android notification channels
+  /// Initialize Android notification channels (skipped on web)
   Future<void> initializeChannels() async {
-    if (Platform.isAndroid) {
+    if (!kIsWeb && Platform.isAndroid) {
       const AndroidNotificationChannel channel = AndroidNotificationChannel(
         'tall_us_notifications',
         'Tall Us Notifications',

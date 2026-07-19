@@ -1,16 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:tall_us/core/appwrite/appwrite_client.dart';
+import 'package:tall_us/core/appwrite/appwrite_config.dart';
 import 'package:tall_us/core/theme/app_theme.dart';
 import 'package:tall_us/core/utils/logger.dart';
 import 'package:tall_us/features/auth/presentation/providers/auth_providers.dart';
 import 'package:tall_us/features/discovery/presentation/providers/discovery_providers.dart';
 import 'package:tall_us/features/match/domain/entities/match_entity.dart';
 import 'package:tall_us/features/match/presentation/widgets/match_dialog.dart';
+import 'package:tall_us/features/notification/presentation/widgets/notifications_dropdown.dart';
 import 'package:tall_us/features/profile/domain/entities/user_profile_entity.dart';
 import 'package:tall_us/features/swipe/domain/entities/swipe_entity.dart';
 import 'package:tall_us/features/swipe/presentation/providers/swipe_providers.dart';
 import 'package:tall_us/features/swipe/presentation/widgets/profile_card.dart';
 import 'package:tall_us/features/swipe/presentation/widgets/super_like_animation.dart';
+import 'package:tall_us/features/swipe/presentation/providers/swipe_limits_provider.dart';
+import 'package:tall_us/features/verification/domain/entities/height_verification_entity.dart';
+import 'package:tall_us/features/verification/presentation/providers/height_verification_provider.dart';
 
 /// Discovery/Swipe screen with real Appwrite data
 class DiscoveryScreen extends ConsumerWidget {
@@ -22,6 +29,31 @@ class DiscoveryScreen extends ConsumerWidget {
     if (currentUser == null) {
       AppLogger.e('User not authenticated, cannot swipe');
       return;
+    }
+
+    // Height-verification gate: like / super-like require a verified height.
+    // Pass (j'aime pas) is always allowed.
+    if (action == SwipeAction.like || action == SwipeAction.superLike) {
+      final status =
+          await ref.read(heightVerificationStatusProvider.future);
+      final verified = status?.isVerified() ?? false;
+      if (!verified) {
+        _showHeightVerificationGate(context, status);
+        return; // abort: no swipe created, card stays in the stack
+      }
+    }
+
+    // Daily-limit gate: like / super-like consume a daily allowance based on
+    // the user's subscription tier. Pass is always allowed.
+    if (action == SwipeAction.like || action == SwipeAction.superLike) {
+      final limits = await ref.read(swipeLimitsProvider.future);
+      final allowed = action == SwipeAction.like
+          ? limits.canLike
+          : limits.canSuperLike;
+      if (!allowed) {
+        _showDailyLimitReached(context, action, limits);
+        return;
+      }
     }
 
     AppLogger.i('Swipe ${action.name} on $profileId by ${currentUser.id}');
@@ -40,6 +72,11 @@ class DiscoveryScreen extends ConsumerWidget {
       targetId: profileId,
       action: action,
     );
+
+    // Refresh the daily-limit counter so the next gate is accurate.
+    if (action == SwipeAction.like || action == SwipeAction.superLike) {
+      ref.invalidate(swipeLimitsProvider);
+    }
 
     // Remove profile from discovery list
     ref.read(discoveryNotifierProvider.notifier).removeProfile(profileId);
@@ -67,56 +104,186 @@ class DiscoveryScreen extends ConsumerWidget {
     );
   }
 
+  /// Contextual popup shown when an unverified user tries to like / super-like.
+  void _showHeightVerificationGate(
+      BuildContext context, HeightVerificationEntity? status) {
+    final inProgress = status?.isInProgress() ?? false;
+
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        shape:
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Row(
+          children: [
+            Icon(inProgress ? Icons.hourglass_top : Icons.verified_user,
+                color: AppTheme.bordeaux),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                inProgress ? 'Presque !' : 'Vérifie ta taille',
+                style: const TextStyle(
+                    fontSize: 20, fontWeight: FontWeight.w800),
+              ),
+            ),
+          ],
+        ),
+        content: Text(
+          inProgress
+              ? 'Ta vérification est en cours. Tu pourras liker dès qu\'elle est validée par notre équipe.'
+              : 'Pour liker et super-liker, prouve ta taille avec une photo. C\'est rapide et ça débloque les likes.',
+          style: const TextStyle(fontSize: 14, height: 1.4),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(),
+            child: Text(
+              inProgress ? 'D\'accord' : 'Plus tard',
+              style: TextStyle(color: AppTheme.navy.withValues(alpha: 0.6)),
+            ),
+          ),
+          if (!inProgress)
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(dialogContext).pop();
+                context.go('/verify-height');
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppTheme.bordeaux,
+                foregroundColor: Colors.white,
+              ),
+              child: const Text('Vérifier ma taille'),
+            ),
+        ],
+      ),
+    );
+  }
+
+  /// Popup shown when the daily like / super-like allowance is exhausted.
+  void _showDailyLimitReached(
+      BuildContext context, SwipeAction action, SwipeLimits limits) {
+    final isLike = action == SwipeAction.like;
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        shape:
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Row(
+          children: [
+            const Icon(Icons.bolt, color: AppTheme.gold),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                isLike
+                    ? 'Limite de likes atteinte'
+                    : 'Super likes épuisés',
+                style: const TextStyle(
+                    fontSize: 19, fontWeight: FontWeight.w800),
+              ),
+            ),
+          ],
+        ),
+        content: Text(
+          isLike
+              ? "Tu as utilisé tes ${limits.likeLimit} likes gratuits d'aujourd'hui. Passe à Tall pour 15 likes/jour — ou à Élite pour des likes illimités."
+              : "Les super likes sont réservés aux forfaits Tall (5/j) et au-delà. Découvre nos forfaits pour en profiter.",
+          style: const TextStyle(fontSize: 14, height: 1.4),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(),
+            child: Text('Plus tard',
+                style: TextStyle(
+                    color: AppTheme.navy.withValues(alpha: 0.6))),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.of(dialogContext).pop();
+              context.go('/subscription');
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppTheme.bordeaux,
+              foregroundColor: Colors.white,
+            ),
+            child: const Text('Voir les forfaits'),
+          ),
+        ],
+      ),
+    );
+  }
+
   void _showMatchDialog(BuildContext context, WidgetRef ref, MatchEntity match) {
     final currentUser = ref.read(authenticatedUserProvider);
 
     // Get the matched user ID (the one that's not current user)
-    final matchedUserId = match.user1Id == currentUser?.id ? match.user2Id : match.user1Id;
+    final matchedUserId =
+        match.user1Id == currentUser?.id ? match.user2Id : match.user1Id;
 
-    // Create a UserProfileEntity from UserEntity
-    // In production, you'd fetch the matched user's full profile
-    UserProfileEntity currentUserProfile = UserProfileEntity(
-      id: currentUser?.id ?? '',
-      userId: currentUser?.id ?? '',
-      displayName: currentUser?.profile?.displayName ?? 'User',
-      gender: currentUser?.profile?.gender ?? 'unknown',
-      heightCm: currentUser?.profile?.heightCm ?? 170,
-      birthday: currentUser?.profile?.birthday ?? DateTime.now(),
-      city: currentUser?.profile?.city ?? 'Unknown',
-      country: currentUser?.profile?.countryCode ?? 'Unknown',
-      photoUrls: [], // ProfileEntity doesn't have photoUrls yet, will be empty for now
-    );
+    _presentMatchDialog(context, ref, currentUser?.id ?? '', matchedUserId);
+  }
 
-    final matchedUser = UserProfileEntity(
-      id: matchedUserId,
-      userId: matchedUserId,
-      displayName: 'Matched User', // In production, fetch real name
-      gender: 'unknown',
-      heightCm: 170,
-      birthday: DateTime.now(),
-      city: 'Unknown',
-      country: 'Unknown',
-      photoUrls: [], // Will show placeholder icon
-    );
+  Future<void> _presentMatchDialog(BuildContext context, WidgetRef ref,
+      String currentUserId, String matchedUserId) async {
+    final databases = ref.read(databasesProvider);
 
-    if (context.mounted && currentUser != null) {
-      showDialog(
-        context: context,
-        barrierDismissible: true,
-        builder: (context) => MatchDialog(
-          currentUser: currentUserProfile,
-          matchedUser: matchedUser,
-          onMessageTap: () {
-            Navigator.of(context).pop();
-            // TODO: Navigate to chat screen
-            AppLogger.i('Navigate to chat with $matchedUserId');
-          },
-          onKeepSwipingTap: () {
-            Navigator.of(context).pop();
-          },
-        ),
+    UserProfileEntity? currentUserProfile;
+    UserProfileEntity? matchedUserProfile;
+
+    // Fetch both profiles (doc id == userId in this app).
+    try {
+      final cur = await databases.getDocument(
+        databaseId: AppwriteConfig.databaseId,
+        collectionId: AppwriteConfig.profilesCollection,
+        documentId: currentUserId,
       );
-    }
+      currentUserProfile = UserProfileEntity.fromMap(cur.data);
+    } catch (_) {}
+    try {
+      final m = await databases.getDocument(
+        databaseId: AppwriteConfig.databaseId,
+        collectionId: AppwriteConfig.profilesCollection,
+        documentId: matchedUserId,
+      );
+      matchedUserProfile = UserProfileEntity.fromMap(m.data);
+    } catch (_) {}
+
+    if (!context.mounted) return;
+
+    showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (context) => MatchDialog(
+        currentUser: currentUserProfile ??
+            UserProfileEntity(
+              id: currentUserId,
+              userId: currentUserId,
+              displayName: 'Vous',
+              gender: 'other',
+              heightCm: 170,
+              birthday: DateTime.now(),
+              city: '',
+              country: '',
+            ),
+        matchedUser: matchedUserProfile ??
+            UserProfileEntity(
+              id: matchedUserId,
+              userId: matchedUserId,
+              displayName: 'Nouveau match',
+              gender: 'other',
+              heightCm: 170,
+              birthday: DateTime.now(),
+              city: '',
+              country: '',
+            ),
+        onMessageTap: () {
+          Navigator.of(context).pop();
+          AppLogger.i('Navigate to chat with $matchedUserId');
+        },
+        onKeepSwipingTap: () {
+          Navigator.of(context).pop();
+        },
+      ),
+    );
   }
 
   @override
@@ -139,7 +306,7 @@ class DiscoveryScreen extends ConsumerWidget {
           child: Column(
             children: [
               // Header
-              _buildHeader(ref),
+              _buildHeader(context, ref),
 
               // Cards stack
               Expanded(
@@ -179,20 +346,18 @@ class DiscoveryScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildHeader(WidgetRef ref) {
+  Widget _buildHeader(BuildContext context, WidgetRef ref) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          // Profile button
+          // Likes button
           IconButton(
-            icon: const Icon(Icons.person_outline),
-            iconSize: 32,
-            color: AppTheme.navy,
-            onPressed: () {
-              // Already on profile tab
-            },
+            icon: const Icon(Icons.favorite_border),
+            iconSize: 30,
+            color: AppTheme.bordeaux,
+            onPressed: () => context.go('/likes'),
           ),
 
           // Logo
@@ -218,14 +383,12 @@ class DiscoveryScreen extends ConsumerWidget {
             ],
           ),
 
-          // Matches button
+          // Notifications button
           IconButton(
-            icon: const Icon(Icons.chat_bubble_outline),
-            iconSize: 32,
+            icon: const Icon(Icons.notifications_none),
+            iconSize: 30,
             color: AppTheme.navy,
-            onPressed: () {
-              // Already on matches tab
-            },
+            onPressed: () => showNotificationsDropdown(context),
           ),
         ],
       ),
@@ -240,15 +403,11 @@ class DiscoveryScreen extends ConsumerWidget {
             ? 400.0 // Tablet/Desktop: limit to 400px
             : double.infinity; // Mobile: full width
 
-        final maxHeight = constraints.maxHeight > 800
-            ? constraints.maxHeight * 0.75 // Tablet/Desktop: 75% of height
-            : double.infinity; // Mobile: full height
-
         return Center(
           child: SizedBox(
             width: maxWidth,
-            height: maxHeight,
             child: Stack(
+              clipBehavior: Clip.none,
               children: [
                 // Background cards (for depth effect)
                 if (profiles.length > 1)
@@ -276,9 +435,6 @@ class DiscoveryScreen extends ConsumerWidget {
                 Positioned.fill(
                   child: ProfileCard(
                     profile: profiles.first,
-                    onTap: () {
-                      // TODO: Show full profile view
-                    },
                     onLike: () => _handleSwipe(context, ref, profiles.first.id, SwipeAction.like),
                     onPass: () => _handleSwipe(context, ref, profiles.first.id, SwipeAction.pass),
                     onSuperLike: () => _handleSwipe(context, ref, profiles.first.id, SwipeAction.superLike),
@@ -328,11 +484,92 @@ class DiscoveryScreen extends ConsumerWidget {
                   size: 28,
                   onTap: () => _handleSwipe(context, ref, firstProfileId, SwipeAction.like),
                 ),
+
+                // Boost button (Légende tier; placeholder)
+                _ActionButton(
+                  icon: Icons.bolt,
+                  color: AppTheme.gold,
+                  size: 24,
+                  onTap: () => _showBoost(context, ref),
+                ),
               ],
             ),
           ),
         );
       },
+    );
+  }
+
+  /// Boost action: gated to premium tiers, placeholder animation otherwise.
+  void _showBoost(BuildContext context, WidgetRef ref) {
+    final isPremium = ref.read(authenticatedUserProvider)?.role.maybeWhen(
+          premium: () => true,
+          admin: () => true,
+          orElse: () => false,
+        ) ??
+        false;
+
+    if (!isPremium) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Les boosts sont inclus dans le forfait Légende ✨'),
+          backgroundColor: AppTheme.bordeaux,
+          action: SnackBarAction(
+            label: 'Voir',
+            textColor: Colors.white,
+            onPressed: () => context.go('/subscription'),
+          ),
+        ),
+      );
+      return;
+    }
+
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        shape:
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 72,
+              height: 72,
+              decoration: BoxDecoration(
+                color: AppTheme.gold.withValues(alpha: 0.15),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(Icons.bolt, color: AppTheme.gold, size: 40),
+            ),
+            const SizedBox(height: 16),
+            const Text('Profil boosté !',
+                style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w800,
+                    color: AppTheme.navy)),
+            const SizedBox(height: 8),
+            Text(
+              'Ton profil est mis en avant pendant 30 minutes. Tu apparaîtras en priorité chez les autres membres.',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                  fontSize: 13, color: AppTheme.navy.withValues(alpha: 0.7)),
+            ),
+          ],
+        ),
+        actions: [
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: () => Navigator.of(dialogContext).pop(),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppTheme.gold,
+                foregroundColor: Colors.white,
+              ),
+              child: const Text('Génial !'),
+            ),
+          ),
+        ],
+      ),
     );
   }
 

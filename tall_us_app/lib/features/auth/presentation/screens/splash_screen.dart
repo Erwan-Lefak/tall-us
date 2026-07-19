@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import '../../../../core/theme/app_theme.dart';
 
 /// Splash Screen
@@ -49,24 +48,15 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     // Start animation
     _animationController.forward();
 
-    // Navigate to onboarding/auth after delay
-    _navigateToNext();
+    // NOTE: navigation out of splash is handled by the router's redirect
+    // (with refreshListenable) once the auth state resolves. We do NOT force
+    // a go('/login') here anymore, which previously bounced deep links.
   }
 
   @override
   void dispose() {
     _animationController.dispose();
     super.dispose();
-  }
-
-  Future<void> _navigateToNext() async {
-    await Future.delayed(const Duration(seconds: 3));
-
-    if (!mounted) return;
-
-    // Navigate to login screen
-    // The router will handle redirection based on auth state
-    context.go('/login');
   }
 
   @override
@@ -106,7 +96,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(24),
                           child: Image.asset(
-                            'assets/images/logo.jpg',
+                            'assets/images/logosf.png',
                             width: 200,
                             height: 200,
                             fit: BoxFit.contain,

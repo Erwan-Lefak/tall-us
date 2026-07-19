@@ -26,6 +26,11 @@ class ProfileRepositoryImpl implements ProfileRepository {
       final profile = await remoteDataSource.getProfile(userId);
       return Right(profile.toEntity());
     } on AppwriteException catch (e) {
+      // If profile not found, create a default one automatically
+      if (e.code == '404' || (e.message?.contains('not found') ?? false)) {
+        AppLogger.i('Profile not found, creating default profile for user: $userId');
+        return _createDefaultProfile(userId);
+      }
       AppLogger.e('Failed to get profile', error: e);
       return Left(ServerFailure(
         message: e.message?.toString() ?? 'Failed to get profile',
@@ -33,6 +38,47 @@ class ProfileRepositoryImpl implements ProfileRepository {
       ));
     } catch (e) {
       AppLogger.e('Unexpected error getting profile', error: e);
+      return Left(UnknownFailure(message: e.toString()));
+    }
+  }
+
+  /// Create a default profile for a user whose profile doesn't exist yet
+  Future<Either<Failure, UserProfileEntity>> _createDefaultProfile(String userId) async {
+    try {
+      // Get current user info from auth
+      final user = await authRemoteDataSource.getCurrentUser();
+      if (user == null) {
+        return const Left(ServerFailure(
+          message: 'User not authenticated',
+          code: 'NOT_AUTHENTICATED',
+        ));
+      }
+
+      final defaultProfile = UserProfileEntity(
+        id: '',
+        userId: userId,
+        displayName: user.profile?.displayName ?? 'Utilisateur',
+        bio: null,
+        gender: user.profile?.gender ?? 'other',
+        heightCm: user.profile?.heightCm ?? 170,
+        birthday: user.profile?.birthday ?? DateTime(2000, 1, 1),
+        city: user.profile?.city ?? '',
+        country: user.profile?.countryCode ?? '',
+        photoUrls: const [],
+        lookingFor: 'relationship',
+      );
+
+      final profileModel = UserProfileModel.fromEntity(defaultProfile);
+      final createdProfile = await remoteDataSource.createProfile(profileModel);
+      return Right(createdProfile.toEntity());
+    } on AppwriteException catch (e) {
+      AppLogger.e('Failed to create default profile', error: e);
+      return Left(ServerFailure(
+        message: e.message?.toString() ?? 'Failed to create default profile',
+        code: e.code?.toString() ?? 'CREATE_DEFAULT_PROFILE_ERROR',
+      ));
+    } catch (e) {
+      AppLogger.e('Unexpected error creating default profile', error: e);
       return Left(UnknownFailure(message: e.toString()));
     }
   }
@@ -105,12 +151,13 @@ class ProfileRepositoryImpl implements ProfileRepository {
   @override
   Future<Either<Failure, UserProfileEntity>> updateProfileFields({
     required String userId,
+    String? displayName,
+    DateTime? birthday,
     String? bio,
     String? city,
     String? country,
     List<String>? photoUrls,
-    String? promptAnswer,
-    String? promptId,
+    String? lookingFor,
   }) async {
     try {
       AppLogger.i('Updating profile fields for user: $userId');
@@ -123,12 +170,13 @@ class ProfileRepositoryImpl implements ProfileRepository {
         (currentProfile) async {
           // Update with new values
           final updatedProfile = currentProfile.copyWith(
+            displayName: displayName ?? currentProfile.displayName,
+            birthday: birthday ?? currentProfile.birthday,
             bio: bio ?? currentProfile.bio,
             city: city ?? currentProfile.city,
             country: country ?? currentProfile.country,
             photoUrls: photoUrls ?? currentProfile.photoUrls,
-            promptAnswer: promptAnswer ?? currentProfile.promptAnswer,
-            promptId: promptId ?? currentProfile.promptId,
+            lookingFor: lookingFor ?? currentProfile.lookingFor,
           );
 
           return await updateProfile(updatedProfile);
@@ -162,6 +210,32 @@ class ProfileRepositoryImpl implements ProfileRepository {
       ));
     } catch (e) {
       AppLogger.e('Unexpected error uploading photo', error: e);
+      return Left(UnknownFailure(message: e.toString()));
+    }
+  }
+
+  /// Upload photo from raw bytes (works on web)
+  Future<Either<Failure, String>> uploadPhotoBytes({
+    required String userId,
+    required List<int> bytes,
+    required String filename,
+  }) async {
+    try {
+      AppLogger.i('Uploading photo bytes for user: $userId');
+      final url = await remoteDataSource.uploadPhotoBytes(
+        userId: userId,
+        bytes: bytes,
+        filename: filename,
+      );
+      return Right(url);
+    } on AppwriteException catch (e) {
+      AppLogger.e('Failed to upload photo bytes', error: e);
+      return Left(ServerFailure(
+        message: e.message?.toString() ?? 'Failed to upload photo',
+        code: e.code?.toString() ?? 'UPLOAD_PHOTO_ERROR',
+      ));
+    } catch (e) {
+      AppLogger.e('Unexpected error uploading photo bytes', error: e);
       return Left(UnknownFailure(message: e.toString()));
     }
   }

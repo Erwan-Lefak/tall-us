@@ -19,11 +19,8 @@ import 'package:tall_us/features/auth/presentation/providers/auth_state.dart';
 // Repository Provider
 // ============================================================================
 
-/// Provider for AuthRepository
-final authRepositoryProvider = Provider<AuthRepository>((ref) {
-  final remoteDataSource = ref.watch(authRemoteDataSourceProvider);
-  return AuthRepositoryImpl(remoteDataSource);
-});
+// Note: authRepositoryProvider is defined in auth_repository_impl.dart
+// (requires both AuthRemoteDataSource and EmailVerificationRemoteDataSource)
 
 // ============================================================================
 // Use Case Providers

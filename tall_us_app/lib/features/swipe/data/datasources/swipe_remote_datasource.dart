@@ -26,10 +26,10 @@ class SwipeRemoteDataSource {
         collectionId: AppwriteConfig.swipesCollection,
         documentId: ID.unique(),
         data: {
-          'fromUserId': swiperId, // Adapter pour la collection existante
-          'toUserId': targetId,   // Adapter pour la collection existante
+          'fromUserId': swiperId, // User who swiped
+          'toUserId': targetId,   // User being swiped on
           'action': action,
-          'createdAt': DateTime.now().toIso8601String(),
+          // createdAt uses the Appwrite system $createdAt field
         },
       );
 
@@ -124,7 +124,7 @@ class SwipeRemoteDataSource {
         collectionId: AppwriteConfig.swipesCollection,
         queries: [
           Query.equal('fromUserId', userId),
-          Query.orderDesc('createdAt'),
+          Query.orderDesc('\$createdAt'),
           Query.limit(limit),
         ],
       );
@@ -153,6 +153,30 @@ class SwipeRemoteDataSource {
       AppLogger.e('Failed to delete swipe', error: e);
       rethrow;
     }
+  }
+
+  /// Count today's swipes of a given action by a user (for daily limits).
+  /// Uses local-day boundaries.
+  Future<int> getDailySwipeCount({
+    required String userId,
+    required String action,
+  }) async {
+    final now = DateTime.now();
+    final startOfDay = DateTime(now.year, now.month, now.day);
+    final endOfDay = startOfDay.add(const Duration(days: 1));
+
+    final result = await _databases.listDocuments(
+      databaseId: AppwriteConfig.databaseId,
+      collectionId: AppwriteConfig.swipesCollection,
+      queries: [
+        Query.equal('fromUserId', userId),
+        Query.equal('action', [action]),
+        Query.greaterThanEqual('\$createdAt', startOfDay.toIso8601String()),
+        Query.lessThan('\$createdAt', endOfDay.toIso8601String()),
+        Query.limit(1),
+      ],
+    );
+    return result.total;
   }
 
   /// Apply client-side filters to profile

@@ -1,9 +1,11 @@
 import 'package:dartz/dartz.dart';
 import 'package:appwrite/appwrite.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:tall_us/core/appwrite/appwrite_client.dart';
 import 'package:tall_us/core/errors/failures.dart';
 import 'package:tall_us/core/utils/logger.dart';
 import 'package:tall_us/features/auth/data/datasources/auth_remote_datasource.dart';
+import 'package:tall_us/features/auth/data/datasources/email_verification_remote_datasource.dart';
 import 'package:tall_us/features/auth/domain/entities/user_entity.dart';
 import 'package:tall_us/features/auth/domain/repositories/auth_repository.dart';
 
@@ -12,8 +14,9 @@ import 'package:tall_us/features/auth/domain/repositories/auth_repository.dart';
 /// Implements AuthRepository using Appwrite
 class AuthRepositoryImpl implements AuthRepository {
   final AuthRemoteDataSource _remoteDataSource;
-  
-  AuthRepositoryImpl(this._remoteDataSource);
+  final EmailVerificationRemoteDataSource _emailVerificationDataSource;
+
+  AuthRepositoryImpl(this._remoteDataSource, this._emailVerificationDataSource);
 
   @override
   bool get isAuthenticated => _remoteDataSource.isAuthenticated;
@@ -224,10 +227,98 @@ class AuthRepositoryImpl implements AuthRepository {
       return Left(UnknownFailure(message: e.toString()));
     }
   }
+
+  @override
+  Future<Either<Failure, void>> sendEmailVerification() async {
+    try {
+      AppLogger.i('Sending email verification');
+      await _emailVerificationDataSource.sendVerificationEmail();
+      return const Right(null);
+    } on AppwriteException catch (e) {
+      AppLogger.e('Failed to send email verification', error: e);
+      return Left(ServerFailure(
+        message: e.message?.toString() ?? 'Failed to send verification email',
+        code: e.code?.toString() ?? 'SEND_VERIFICATION_ERROR',
+      ));
+    } catch (e) {
+      return Left(UnknownFailure(message: e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> sendVerificationWithTempSession({
+    required String email,
+    required String password,
+  }) async {
+    try {
+      AppLogger.i('Sending verification with temp session');
+      await _emailVerificationDataSource.sendVerificationWithTempSession(
+        email: email,
+        password: password,
+      );
+      return const Right(null);
+    } on AppwriteException catch (e) {
+      AppLogger.e('Failed to send verification with temp session', error: e);
+      return Left(ServerFailure(
+        message: e.message?.toString() ?? 'Failed to send verification email',
+        code: e.code?.toString() ?? 'SEND_VERIFICATION_ERROR',
+      ));
+    } catch (e) {
+      return Left(UnknownFailure(message: e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, bool>> verifyEmail({
+    required String userId,
+    required String secret,
+  }) async {
+    try {
+      AppLogger.i('Verifying email');
+      final result = await _emailVerificationDataSource.verifyEmail(
+        userId: userId,
+        secret: secret,
+      );
+      return Right(result);
+    } on AppwriteException catch (e) {
+      AppLogger.e('Failed to verify email', error: e);
+      return Left(ServerFailure(
+        message: e.message?.toString() ?? 'Failed to verify email',
+        code: e.code?.toString() ?? 'VERIFY_EMAIL_ERROR',
+      ));
+    } catch (e) {
+      return Left(UnknownFailure(message: e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, bool>> checkEmailVerification() async {
+    try {
+      final verified = await _emailVerificationDataSource.checkVerificationStatus();
+      return Right(verified);
+    } on AppwriteException catch (e) {
+      AppLogger.e('Failed to check email verification', error: e);
+      return Left(ServerFailure(
+        message: e.message?.toString() ?? 'Failed to check verification',
+        code: e.code?.toString() ?? 'CHECK_VERIFICATION_ERROR',
+      ));
+    } catch (e) {
+      return Left(UnknownFailure(message: e.toString()));
+    }
+  }
 }
+
+/// Provider for EmailVerificationRemoteDataSource
+final emailVerificationDataSourceProvider =
+    Provider<EmailVerificationRemoteDataSource>((ref) {
+  final account = ref.watch(accountProvider);
+  return EmailVerificationRemoteDataSource(account: account);
+});
 
 /// Provider for AuthRepository
 final authRepositoryProvider = Provider<AuthRepository>((ref) {
   final remoteDataSource = ref.watch(authRemoteDataSourceProvider);
-  return AuthRepositoryImpl(remoteDataSource);
+  final emailVerificationDataSource =
+      ref.watch(emailVerificationDataSourceProvider);
+  return AuthRepositoryImpl(remoteDataSource, emailVerificationDataSource);
 });

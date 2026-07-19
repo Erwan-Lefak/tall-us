@@ -1,0 +1,12 @@
+# Sensitive files (API keys, credentials)
+claude_code_zai_env.sh
+
+# Business plan (private business documents)
+*.docx
+*.pptx
+*Business*Plan*
+generate_pptx.js
+pptx_assets/
+
+# One-off setup/seed scripts (contain hardcoded API keys — regenerate locally)
+tall_us_app/tool/

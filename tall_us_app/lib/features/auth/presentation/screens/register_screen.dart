@@ -181,8 +181,12 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
           );
         },
         authenticated: (_) {
-          // Navigate to home screen on successful registration
+          // Navigate to home screen on successful login
           context.go('/home');
+        },
+        needsVerification: (_, __) {
+          // Navigate to email verification screen
+          context.go('/verify-email');
         },
         orElse: () {},
       );
@@ -225,7 +229,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(16),
                       child: Image.asset(
-                        'assets/images/logo.jpg',
+                        'assets/images/logosf.png',
                         width: 120,
                         height: 120,
                         fit: BoxFit.contain,
@@ -244,14 +248,6 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                       ),
                   textAlign: TextAlign.center,
                 ),
-                const SizedBox(height: 8),
-                Text(
-                  'Rejoignez la communauté de grands célibataires',
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: AppTheme.navy.withValues(alpha: 0.7),
-                      ),
-                ),
-
                 const SizedBox(height: 32),
 
                 // Email

@@ -127,7 +127,11 @@ class AuthNotifier extends StateNotifier<AuthState> {
       },
       (user) {
         AppLogger.i('Registration successful: ${user.email}');
-        state = AuthState.authenticated(user);
+        // Don't auto-login, go to verification screen
+        state = AuthState.needsVerification(
+          email: user.email,
+          userId: user.id,
+        );
       },
     );
   }
@@ -252,6 +256,8 @@ class AuthNotifier extends StateNotifier<AuthState> {
       initial: () => state = const AuthState.initial(),
       loading: () => state = const AuthState.loading(),
       authenticated: (user) => state = AuthState.authenticated(user),
+      needsVerification: (email, userId) =>
+          state = AuthState.needsVerification(email: email, userId: userId),
       unauthenticated: () => state = const AuthState.unauthenticated(),
       error: (_) => state = const AuthState.unauthenticated(),
     );

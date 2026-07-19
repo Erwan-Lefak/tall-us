@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:go_router/go_router.dart';
 import 'package:tall_us/core/router/app_router.dart';
 import 'package:tall_us/core/theme/app_theme.dart';
@@ -37,6 +38,10 @@ Future<void> _initializeFirebase() async {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Use clean path URLs (e.g. /admin) instead of hash URLs (/#/admin).
+  // Safe for both local web-server and Vercel (SPA fallback configured).
+  usePathUrlStrategy();
 
   // Setup error handlers
   _setupErrorHandlers();

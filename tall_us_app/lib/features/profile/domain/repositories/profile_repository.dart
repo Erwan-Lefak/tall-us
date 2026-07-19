@@ -20,12 +20,13 @@ abstract class ProfileRepository {
   /// Update specific profile fields
   Future<Either<Failure, UserProfileEntity>> updateProfileFields({
     required String userId,
+    String? displayName,
+    DateTime? birthday,
     String? bio,
     String? city,
     String? country,
     List<String>? photoUrls,
-    String? promptAnswer,
-    String? promptId,
+    String? lookingFor,
   });
 
   /// Upload a profile photo
@@ -33,6 +34,13 @@ abstract class ProfileRepository {
     required String userId,
     required String filePath,
     int? position,
+  });
+
+  /// Upload a photo from raw bytes (web compatible)
+  Future<Either<Failure, String>> uploadPhotoBytes({
+    required String userId,
+    required List<int> bytes,
+    required String filename,
   });
 
   /// Upload multiple photos
