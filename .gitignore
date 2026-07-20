@@ -1,6 +1,3 @@
-# Sensitive files (API keys, credentials)
-claude_code_zai_env.sh
-
 # Business plan (private business documents)
 *.docx
 *.pptx
